@@ -56,6 +56,9 @@ def ny_laanetager():
             if search==mobilnr:
                 funnet=True
                 print('Kan ikke registerer, fant bruker med mobilnummer:',mobilnr,'. Lånetagenummer:',lnr)        
+            
+            mobilnr=brukerFil.readline()
+
         brukerFil.close()
 
         if funnet==False:
@@ -129,7 +132,8 @@ def utlaan():
             utlaansFil.close()
             utlaansregister.sort(reverse=True)
             utlaansnr_ny=utlaansregister[0]
-            utlaansnr=utlaansnr_ny+1
+            utlaansnr_ny=int(utlaansnr_ny)+1
+            utlaansnr=str(utlaansnr_ny)
 
             #skriv til fil
             utlaansFil=open('Utlaan.txt','a')
@@ -182,6 +186,7 @@ def slett():
                 while utlaansnr!='':
                     utlaansnr=utlaansnr.rstrip('\n')
                     lnr_utl=utlaansFil.readline()
+                    lnr_utl=lnr_utl.rstrip('\n')
                     isbn=utlaansFil.readline()
                     utlaansdato=utlaansFil.readline()
                     innleveringsdato=utlaansFil.readline()
@@ -192,9 +197,9 @@ def slett():
 
                     utlaansnr=utlaansFil.readline()
                 
-
                 #beregner og tilordner neste sekvensielle utlånsnr
-                utlaansFil.close()             
+                utlaansFil.close()  
+            mobilnr=brukerFil.readline()           
         brukerFil.close()
 
         if funnet==True and funnet_utl==False:
@@ -222,17 +227,17 @@ def slett():
             
             os.remove('brukere.txt')
             os.rename('tempfil.txt','brukere.txt')
+           
+            print('Bruker slettet')
         else:
             print('Bruker ikke funnet, kan ikke slette')
 
 
-        igjen=input('Ønsker du å en til registrant (y/n)? ')
+        igjen=input('Ønsker du å slette en til registrant (y/n)? ')
         if igjen=='n':
             igjen=False
         else:
             igjen=True
 
 #slutt på slett
-
-
 main()

@@ -1,3 +1,5 @@
+import tkinter
+
 fortsette=True
 
 while fortsette==True:

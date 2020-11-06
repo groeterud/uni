@@ -1,0 +1,26 @@
+bruk av filer, 3 steg:
+
+1: åpne fila
+2: prosessere (lese/skrive i ulike kombinasjoner)
+3: lukke fila 
+
+var struktur for å åpne filer:
+    filvariabel=open('filnavn',modus)  #OBS   påpass at 'filnavn' stemmer overens med filnavnet i oppgaveteksten på obligen
+
+    moduser:
+        r   -   read    default om ikke definert, error om filen ikke eksisterer
+        w   -   write   skriver data, lager ny fil om den ike finnes. OBS!! tunga rett i kjeften, kan oversrkrive data!!
+        a   -   append  skriver data på slutten av eksisterende fil, lager ny fil om den ikke finnes. 
+        x   -   create  lager ny fil, thrower error om filen eksisterer
+
+
+
+-------- write metoden --
+filvariabel.write(string)    om vi har non-string variabler så må de konverteres til string. 
+
+
+-------- close metoden--
+filvariabel.close()
+
+
+        

@@ -1,0 +1,37 @@
+___while container__
+go_again="ja"
+
+while go_again == "ja" or go_again =="Ja" or go_again=="JA"
+    kode
+    kode
+    kode
+    go_again = input('Vil du gjøre en ny lånekalkulasjon? Skriv "ja" dersom du ønsker det, eller "nei" om du ønsker å avbryte')
+
+
+#1 inndata som tilordning på variabler: 
+	#1 pris på bilen
+	#2 hvor mye egenkapital?
+	#3 ønsket nedbetalingstid (år)
+
+#2 beregning av variabler
+	#1 egenkapital_pct i prosent
+		definert som: egenkapital / pris på bilen * 100 
+
+
+#3 hvis-løkke
+hvis egenkapital_pct<=35  => error, egenkapital under minstekrav, lån kan ikke innvilges
+elif egenkapital_pct<50.6 and egenkapital_pct>=35.5 => sett årlig rente til 4.5%
+elif egenkapital_pct<60 and egenkapital_pct>=50.6 => sett årlig rente til 3% 
+else => sett årlig rente til 2.5% 
+
+#4 deklarere låne- og rentevariabler 
+terminrente = årlig rente / 12 
+antall_terminer = antall år * 12 
+lånebeløp = pris på bil - egenkapital
+
+#5 beregne terminbeløp
+terminbeløp = lånebeløp * ((((1+terminrente)**antall_terminer)*terminrente)/(((1+terminrente)**antall_terminer)-1))
+
+terminbelop = laanebelop*((((1+terminrente)**antall_terminer)*terminrente)/(((1+terminrente)**antall_terminer)-1))
+
+

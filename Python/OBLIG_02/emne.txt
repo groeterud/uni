@@ -1,0 +1,8 @@
+PRG1000
+Grunnleggende Programmering
+INF1000
+Informasjonssystemer
+SYS1000
+Systemutvikling
+WEB1100
+Webutvikling

@@ -1,0 +1,5 @@
+price_one=int(input("input price: "))
+price_two=int(input("input price: "))
+price_three=int(input("input price: "))
+price_four=int(input("input price: "))
+price_five=int(input("input price: "))

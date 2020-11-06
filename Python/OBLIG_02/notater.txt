@@ -1,0 +1,46 @@
+ lese linje for linje // readline()
+ 
+ test på end of file 
+    while descr != '':
+        asdaslnda
+
+FILER OG STRUKTUR;
+student.txt, for hver student lagres <studentnr, fornavn, etternavn, studium>
+emne.txt, for hvert emne lagres <emnekode, emnenavn>
+eksamensresultat.txt, for hvert eksamensresultat for hver student lagres <emnekode, studentnr, karakter>
+
+
+I programmet skal det være mulig å registrere studenter, 
+    hvor det sjekkes om en student finnes fra før, før lagring gjennomføres. 
+    Dersom student finnes fra før skal brukeren få beskjed om det og lagring skal ikke gjennomføres («unngå dobbeltlagring»).
+
+
+Det skal være mulig å slette en student,
+    men bare hvis det ikke er registrert eksamensresultater for denne studenten. 
+
+Videre skal det være mulig å skrive ut karakterliste for en student
+    som inneholder studentopplysningene, hvilket studium studenten går på og alle eksamensresultater med emnekode, emnenavn og karakter.
+
+
+Det skal være mulig å kjøre programmet så lenge brukeren ønsker
+
+
+
+
+
+
+Presisering ang filstrukturen dere skal programmere mot
+
+For å unngå eventuelle misforståelser presiseres følgende:
+
+I de sekvensielle tekstfilene ligger det ett felt pr linje for hver post, i student.txt kan da innholdet være
+
+2222
+
+Kari
+
+Villikke
+
+Bachelor IT og IS
+
+osv...

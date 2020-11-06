@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        table{
+            border-collapse: separate;
+            border-spacing: 0.75em;
+        }
+        th,td{
+            padding: 1em;
+            border: 1px solid black;
+        }
+        .usynlig{
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <h1>Grunnstruktur for tabeller</h1>
+    <!--
+        html definerer tabeller 'on a row-by-row basis'
+        nummererer cellene fortløpende med rad-indeks først
+    -->
+    <table border="1" style="background-color: grey;">
+        <th class="usynlig"></th>  <!-- Legg table header utenfor Table Row for å få headere på toppen-->
+        <th style="background-color: red;">Rød</th>
+        <th style="background-color: yellow;">Gul</th>
+        <th style="background-color: blue;">Blå</th>
+        <tr>
+            <th style="background-color: red;">Rød</th> <!-- Legg table header inne i Table row for å få header i raden-->
+            <td style="background-color: red;">Rød</td>
+            <td style="background-color: orange;">Oransje</td>
+            <td style="background-color: purple;">Lilla</td>
+        </tr>
+        <tr>
+            <th style="background-color: yellow;" >Gul</th>
+            <td style="background-color: orange;">Oransje</td>
+            <td style="background-color: yellow;">Gul</td>
+            <td style="background-color: green;">Grønn</td>
+        </tr>
+        <tr>
+            <th style="background-color: blue;">Blå</th>
+            <td style="background-color: purple;">Lilla</td>
+            <td style="background-color: green;">Grønn</td>
+            <td style="background-color: blue;">Blå</td>
+        </tr>
+    </table>
+</body>
+</html>

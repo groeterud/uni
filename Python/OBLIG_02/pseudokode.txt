@@ -1,0 +1,225 @@
+import os (trengs for å rename og slette filer )
+
+
+def studentRegistrering()
+    igjen=True
+    while igjen 
+        search = input skriv inn studentnr på student du ønsker å sjekke
+        print: Gjennomgår fila for å se om studentnr allerede eksisterer
+        åpne student.txt i append modus. 
+        Funnet=False
+        
+        while løkke for å se om studentnr allerede eksisterer i fila 
+            readline (hopper over fornavn)
+            readline (hopper over etternavn)
+            readline (hopper over studie)
+            hvis studentnr funnet:
+                Funnet=True
+        
+
+        Hvis funnet:    
+            print 'studentnr eksisterer allerede, kan ikke overskrive eksisterende studentdata'
+            close student.txt
+        hvis ikke funnet (else): 
+            print 'studentnr ikke funnet, registrering kan fortsette'
+
+            input på fornavn
+            input på etternavn
+            input på studium
+
+            write studentnr+\n
+            write fornavn+\n
+            write etternavn+\n
+            write studium+\n
+            
+            close student.txt
+
+        input: Ønsker du å legge til flere studenter? Skriv ja for å legge til flere studenter, eller nei for å returnere til menyen. 
+        if input == 'nei':
+            igjen=False
+#slutt studentRegistrering()
+
+^kode fungerer
+
+
+def studentSlett()
+    igjen=True
+    while løkke på igjen
+        search = input 'skriv inn studentnr på student du ønsker å slette'
+        print: Utfører sjekk for å se om studenten finnes i studentregisteret
+        åpne student.txt i read
+        Funnet=False
+
+        while løkke for å se om studentnr allerede eksisterer
+            hvis studentnr funnet:
+                Funnet=True
+
+        close student.txt
+
+        if Funnet==False:
+            print: Kan ike slette da studenten aldri var registrert
+        else: 
+            print: Sjekker om studenten har eksamensresultater. 
+            eksamenFunnet=False
+            åpne eksamensresultat.txt i read
+            
+            while løkke for å se om studnr finnes i eksamensregisteret
+                hvis studentnr funnet:
+                    eksamenFunnet=True
+            close eksamensresultat.txt
+            
+            if eksamenFunnet==True:
+                print: Kan ikke slette studentdata, studenten har registrert eksamensdata. 
+            else:
+                print: Ingen eksamensdata funnet. Sletter studenten sine data
+
+                åpne tempfil.txt i write
+                åpne student.txt i read 
+                
+                studentnr=studentfil.readline()
+
+                #jobbe gjennom student.txt 
+                while studentnr != '':
+                    #vi må definere noen hopp 
+                    studentnr=studentnr.rstrip('\n')
+                    fornavn=studentfil.readline()
+                    etternavn=studentfil.readline()
+                    studium=studentfil.readline()
+                    if studentnr != search:
+                        skriv til tempfil {
+                            (studentnr+'\n')
+                            fornavn
+                            etternavn
+                            studium
+                        }
+                    
+                    os.remove(student.txt)
+                    os.rename(tempfil.txt, student.txt)
+
+                    print: studentdata fjernet. 
+   
+    igjen=input('Ønsker du å slette mer studentdata?: ')
+    if igjen != 'nei':
+        igjen=True
+    else:
+        igjen=False
+
+#slutt studentSlett()
+
+                    
+def karakterListe()
+    igjen=True
+
+    while loop 
+        search = input skriv inn studentnr på student
+        print: Gjennomgår fila for å se om studentnr allerede eksisterer
+        
+        funnet=False
+
+        åpne eksamensresultat.txt i read
+        
+        #pga datastruktur i filen eksamensresultat.txt må vi dytte filen inn i en tabell for å unngå å søke gjennom filen for mange ganger. 
+        eksamensdata=[]
+
+        resultat=eksamensresultat.readlin()
+
+        #while løkke for å dytte tekstdata inn i tabell 
+        while resultat!='':
+            resultat=resultat.rstrip('\n)
+            eksamensdata+=[resultat]
+
+        close eksamensresultat.txt
+
+        #se om vi har funnet studentnr
+
+        #Vi drar ut alle eksamensdata tilknyttet student og legger i en egen liste med samme struktur. 
+        student_eksamendata=[]
+
+        #så teller vi antall eksamenstreff for bruk senere
+        antall_treff=0
+
+        #range start og step definert iht filstruktur
+        for i in range(1,len(eksamensdata),3):
+            if eksamensdata[i]==search:
+                funnet=True
+                antall_treff+=1
+                #legge inn alle eksamenstreff i personifisert liste
+                student_eksamendata+=[eksamensdata[i-1]]#emnekode
+                student_eksamendata+=[eksamensdata[i]]#studentnr
+                student_eksamendata+=[eksamensdata[i+1]]#karakter
+
+
+        if funnet==True:
+            
+            åpne student.txt i read modus. 
+        
+            while løkke for å finne persondata til student
+                hvis studentnr funnet:
+                    #lagre studentinformasjon
+                    fornavn=studentfil.readline()
+                    fornavn=fornavn.rstrip('\n')
+                    etternavn=studentfil.readline()
+                    etternavn=etternavn.rstrip('\n')
+                    studium=studentfil.readline()
+                    studium=studium.rstrip('\n')
+            
+            print: studentopplysninger for (fornavn,etternavn)
+            print: student nummer: search
+            print: studie: studium
+
+
+            close student.txt
+
+            #la oss lage en liten oversikt over emnekoder og emner
+            emner=[] #lista som skal inneholde galskapen
+            åpne emne.txt
+            emnekode=emne.txt readline() 
+            emnenavn=0
+            while emnekode !='':
+                emne+=[emnekode]
+
+                emnenavn=emne.txt readline()
+                emnenavn=emenenavn.rstrip('\n')
+                emne+=[emnenavn]
+        
+
+            #knytte sammen emnekoder fra student_eksamendata og får ut navn:
+            for index in range(0,antall_treff*3,3):
+                emnekode=student_eksamendata[index]
+                for x in range(0,len(emner),2):
+                    if emner[x]==emnekode:
+                        #printer ut eksamenskarakterer og emneinfo for alle karakterer
+                        print: Eksamenskarakter for emnet(emner[x+1]), med emnekode (emner[x]):
+                        print: Karakter:(student_eksamendata[index+2]) 
+
+    input: Ønsker du å se flere eksamensresultater? Skriv ja for å søke opp flere studenter, eller nei for å returnere til menyen. 
+        if input == 'nei':
+            igjen=False
+
+
+def main()
+    fortsett=True
+        pakker alt inn i en while løkke. 
+
+        print: Velkommen til Studentdata
+        print: I denne menyen har du følgende valg:
+        print: Valg 1 - Legg til ny student
+        print: Valg 2 - Slett student
+        print: Valg 3 - Skriv ut karakterliste på student
+
+        print: Valg 9 - Avslutt program
+        
+        Input: Velg program
+
+        if input er 1:
+            studentRegistrering()
+        
+        else if input er 2:
+            studentSlett()
+        
+        else if input er 3:
+        studentKarakter()
+        
+        else if input er 9:
+            fortsett=False
+main()

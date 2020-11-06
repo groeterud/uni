@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styling av tekst</title>
+
+</head>
+<body>
+    <h1>Eksempler på ulik styling av tekst, dvs deler av tekst i et avsnitt</h1>
+    
+    <!-- Bare lov å bruke semantiske-->
+    <h2>Først eksempel på bruk av semantiske HTML tagger - LCK s122</h2>
+    <h3> De semantiske HTML taggene er nye</h3>
+    <p>I dette avsnittet har jeg formatert deler av teksten med <em>"Vektleggingstaggen"</em>.</p>
+    <p>I dette avsnittet har jeg formatert deler av teksten med <strong>sterk vektleggingstagg</strong>.</p>
+    
+
+    <!-- Ikke bruk disse-->
+    <h2>Så noen eksempler på bruk av fysiske (HTML) style tagger som har overlevd fra HTML 3.2 til HTML 5. LCK s124</h2>
+    <p>I dette avsnittet har jeg formatert deler av teksten med <b>uthevtaggen</b>.</p>
+    <p>I dette avsnittet har jeg formatert deler av teksten med <u>understrektaggen</u>. </p>
+    
+    <h2>Formatering ved burk av CSS, LCK s 125</h2>
+    <p>Da får vi bruk for 
+        <span>"Span-taggen" som ikke har noen effekt på egenhånd (brukt alene).
+    </span>Men vi kan bruke den sammen med style-attributer
+    </p>
+
+    <h3>Text Decoration Property</h3>
+    <p>I dette avsnittet er deler av teksten stylet med <span style="text-decoration: underline;">understreket tekst</span>.</p>
+    <p>I dette avsnittet er deler av teksten styled med <span style="text-decoration: overline;">overstreket tekst</span>.</p>
+    
+    <p>Alle tagger som inneholder tekst kan styles på denne måten</p>
+  
+    <!--<h1 style="text-decoration: underline;">Banning i kirken på høylys dag</h1>
+    -->
+    <h3>Font Properties</h3>
+    <p>I dette avsnittet er deler av teksten stylet med <span style="font-style: italic;">Italic/Kursiv tekst</span>.</p>
+    <p>I dette avsnittet er deler av teksten stylet med <span style="font-weight: bold;">Uthevet tekst</span>.</p>
+
+    <!-- Enket/Fast Linjeskift -->
+    <!-- Feil bruk = bruke det for å flytte ting på linjer.-->
+    <!-- Kan brukes til å lage linjeskift innad i en <p>. Skall ikke brukes som tom print for å skape linjer-->
+     <br>
+    <p>Dette er et nytt avsnitt etter et linjeskift. Etter et avsnitt fungerer linjeskift som en tom linje. Dette er feil bruk av linjeskift ihht HTML5. <br>
+    Man kan bruke det innad i avsnitt for å starte en ny linje, men IKKE mellom avsnitt.</p>
+    <p>Det riktige er altså å bruke linjeskift <br> i et avsnitt. <br>Det fungerer da som fast linjeskift. <br>Det kan da være greit "å brekke teksten" i teksteditoren når en bruker tag for linjeskift, jfr forelesning 1</p>
+    
+
+    <h1>Preformatert tekst</h1>
+        <!-- Kan brukes til enkle tabelariske oppstillinger, vi skal ha om tabeller senere-->
+        <!-- ikke bruk tabulator i <pre>-tag, og hold linjene kortere enn 60 tegn-->
+    <pre>
+    -----------------------------------
+       overskr1   overskr2   overskr3
+    -----------------------------------
+        100         200        300
+        500         400        350
+        125         375        425
+    -----------------------------------
+    </pre>
+
+    <h3>3 ting som ville gjort at denne ikke ville vært godkjent</h3>
+    <ul>
+        <li>strukturen</li>
+        <li>gamle tagger som ikke er HTML compliant</li>
+        <li>bruk av <code> br </code>taggen</li>
+        <li>konsekvent hierarki mtp bruk av headinger</li>
+    </ul>
+
+</body>
+</html>

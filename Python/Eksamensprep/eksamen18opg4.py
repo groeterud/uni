@@ -85,7 +85,6 @@ def utlaan():
 
     while igjen==True:
         
-
         search=input('Skriv inn lånetagernr på lånetager: ')
         funnet=False
 
@@ -112,7 +111,7 @@ def utlaan():
             print('Beklager, du må registrere lånetageren først')
         else:
             utlaansregister=[]
-            utlaansFil=open('Utlaan.txt','r')
+            utlaansFil=open('utlaan.txt','r')
             #struktur på utlånsfil <utlaansnr, lnr, ISBN, utlaansdato,innleveringsdato>
             utlaansnr=utlaansFil.readline()
 
@@ -126,7 +125,6 @@ def utlaan():
                 innleveringsdato=utlaansFil.readline()
 
                 utlaansnr=utlaansFil.readline()
-            
 
             #beregner og tilordner neste sekvensielle utlånsnr
             utlaansFil.close()
@@ -136,7 +134,7 @@ def utlaan():
             utlaansnr=str(utlaansnr_ny)
 
             #skriv til fil
-            utlaansFil=open('Utlaan.txt','a')
+            utlaansFil=open('utlaan.txt','a')
             lnr=search #bare overskriver verdien for å gjøre writen mer semantisk
             innleveringsdato='x' #vi må ha data i feltet for retroaktivitet. 
             isbn=input('Skriv in ISBN nummeret: ')
@@ -179,7 +177,7 @@ def slett():
 
             if search==mobilnr:
                 funnet=True
-                utlaansFil=open('Utlaan.txt','r')
+                utlaansFil=open('utlaan.txt','r')
                 #struktur på utlånsfil <utlaansnr, lnr, ISBN, utlaansdato,innleveringsdato>
                 utlaansnr=utlaansFil.readline()
 
@@ -213,7 +211,6 @@ def slett():
                 fornavn=brukerFil.readline()
                 etternavn=brukerFil.readline()
               
-
                 if search!=mobilnr:
                     tempfil.write(mobilnr+'\n')
                     tempfil.write(lnr)

@@ -1,5 +1,5 @@
 l1=[1,14,26,37,100,86,77]
-l2=[2,13,27,38,9,85,78]
+l2=[2,13,27,38,99,85,78]
 nyliste=[]
 
 print(l1)
@@ -15,4 +15,6 @@ for x in range (0,len(l1),1):
         nyliste+=[l2[x]]
         nyliste+=[l1[x]]
 
+#nyliste.sort()
 print(nyliste)
+

@@ -237,4 +237,4 @@ def slett():
             igjen=True
 
 #slutt på slett
-main()
+main() 

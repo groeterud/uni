@@ -1,0 +1,41 @@
+/*desktop styling */
+
+body {
+    color:rgb(200, 50, 50);
+}
+
+.column {
+    float: left;
+    width: 33.33%;
+  }
+
+.column p, .column h3{
+    padding-left: 0.5rem;
+}
+  /* Clear floats after the columns */
+  .row:after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+
+/*mobil*/
+@media only screen and (max-width: 720px) {
+    .column {
+      width: 100%;
+    }
+    body{
+        color: darkblue;
+    }
+  }
+
+
+  /*pad*/
+@media only screen and (max-width: 1280px) and (min-width:721px) {
+    .column {
+      width: 50%;
+    }
+    body{
+        color:cyan;
+    }
+  }

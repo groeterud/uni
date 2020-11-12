@@ -44,6 +44,8 @@ def registrer_ny_kunde():
 
         if mobilnr==search:
             funnet=True
+
+        mobilnr=kundefil.readline()
     
     kundefil.close()
     if funnet==True:
@@ -84,6 +86,8 @@ def registrer_ny_hund():
 
         if mobilnr==search:
             funnet=True
+
+        mobilnr=kundefil.readline()
     
     kundefil.close()
     if funnet==True:
@@ -98,7 +102,7 @@ def registrer_ny_hund():
             eiersMobilnr=eiersMobilnr.rstrip('\n')
             if eiersMobilnr==search:
                 funnet_hund=True
-        
+            hundeID=hundefil.readline()
         hundefil.close()
 
         if funnet_hund==False:
@@ -138,6 +142,7 @@ def slett_kunde():
         eiersMobilnr=eiersMobilnr.rstrip('\n')
         if eiersMobilnr==search:
             funnet_hund=True
+        hundeID=hundefil.readline()
     
     hundefil.close()
     if funnet_hund==True:
@@ -160,7 +165,8 @@ def slett_kunde():
                 tempfil.write(fornavn)
                 tempfil.write(etternavn)
                 tempfil.write(betalingskortnr)
-        
+
+            mobilnr=kundefil.readline()
         kundefil.close()
         tempfil.close()
 

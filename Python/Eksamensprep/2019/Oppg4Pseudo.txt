@@ -1,0 +1,28 @@
+hund.txt:
+hundeID
+hundenavn
+rase
+eiersMobilnr
+startdato 
+
+
+
+kunde.txt
+mobilnr
+fornavn
+etternavn
+betalingskortnr
+
+
+registrer_ny_kunde()
+registrere ny kunde, dobbeltsjekk at kunden ikke finnes
+
+
+registrer_ny_hund()
+sjekk at eier finnes
+registrere ny hund, skal ikke være registrert fra før
+
+
+slett_kunde()
+sjekk om det er registrert hund på kunden 
+om ikke, slett 

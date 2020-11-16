@@ -117,22 +117,30 @@ def utlaan():
 
             while utlaansnr!='':
                 utlaansnr=utlaansnr.rstrip('\n')
+                #adds utlaansnr from file to list as an int (was string)
+                utlaansnr=int(utlaansnr)
                 utlaansregister+=[utlaansnr]
 
                 lnr=utlaansFil.readline()
                 isbn=utlaansFil.readline()
                 utlaansdato=utlaansFil.readline()
                 innleveringsdato=utlaansFil.readline()
-
+            
                 utlaansnr=utlaansFil.readline()
 
             #beregner og tilordner neste sekvensielle utlånsnr
             utlaansFil.close()
-            utlaansregister.sort(reverse=True)
-            utlaansnr_ny=utlaansregister[0]
-            utlaansnr_ny=int(utlaansnr_ny)+1
+            
+            #finds the biggest number in the list
+            storste_Tall=1
+            for x in range (0,len(utlaansregister),1):
+                if utlaansregister[x]>storste_Tall:
+                    storste_Tall=utlaansregister[x]
+            
+            #new number to add is 1 bigger than current biggest number
+            utlaansnr_ny=storste_Tall+1
+            #Convert it to a string so we can store it properly in the file. 
             utlaansnr=str(utlaansnr_ny)
-
             #skriv til fil
             utlaansFil=open('utlaan.txt','a')
             lnr=search #bare overskriver verdien for å gjøre writen mer semantisk

@@ -1,0 +1,27 @@
+Hvordan ser en liste ut? 
+^
+
+Hvordan kan du hente ut data fra en hviss posisjon i en liste? 
+^
+
+
+Hvordan kan du legge til en verdi i en liste? 
+^
+
+
+Hvordan kan du fjerne data fra en posisjon i listen?
+^
+
+
+Hvordan kan du fjerne data av en viss verdi i liste?
+^
+
+
+Hvordan kan du jobbe gjennom en liste for å sjekke etter en hviss verdi du leter etter? 
+^
+
+
+Hvordan kan du sortere en fil fra minst til størst via python? 
+^
+
+

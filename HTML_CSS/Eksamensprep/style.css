@@ -1,0 +1,39 @@
+tr,th,td{
+   border: 1px solid darkblue;
+   padding: 0.25em;
+   margin: 0;
+   background-color: red;
+   border-collapse: separate;
+}
+
+body,table{
+    background-color: darkblue;
+}
+
+
+nav{
+    background-color: white;
+}
+article,h1{
+    background-color: lightgreen;
+}
+section,p{
+    background-color: white;
+}
+
+footer{
+    position: absolute;
+    bottom: 0%;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0em;
+}
+
+@media only screen and (min-width:1201px) {
+    article{
+        column-count: 2;
+    }
+    #treningstider{
+        margin-top: 1em;
+    }
+}

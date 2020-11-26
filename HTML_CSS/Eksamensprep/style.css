@@ -32,6 +32,7 @@ footer{
 @media only screen and (min-width:1201px) {
     article{
         column-count: 2;
+        padding-top: 1em;
     }
     #treningstider{
         margin-top: 1em;

@@ -1,0 +1,27 @@
+article{
+    background-color: lightyellow;
+}
+h1,h2,h3,h4{
+    color: blue;
+}
+
+table,th,td{
+    border: 1px solid black;
+    border-collapse: collapse;
+    background-color: lightgreen;
+    text-align: left;
+    padding: 1em;
+}
+th{
+    text-align: center;
+}
+
+@media (min-width:1501px) {
+    article{
+        column-count: 2;
+        break-inside: avoid;
+    }
+    #del5{
+        break-before: always;
+    }
+}

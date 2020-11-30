@@ -1,0 +1,37 @@
+table{
+    border-collapse: collapse;
+    background-color: lightgreen;
+}
+
+table,th,td{
+    border: 1px solid black;
+}
+
+body{
+    background-color: lightblue;
+}
+article{
+    background-color: lightyellow;
+}
+
+h1,h2,h3{
+    color:blue
+}
+
+/* 2 kolonner ved 1501px og over. Om det ikke var så nøye med hva som var i hvilken kolonne så kunne jeg bare brukt column-count: 2; på article, men nå måtte jeg innlemme de i aside. 
+Jeg går ikke tilbake og endrer tidligere besvarelser, da man ikke tok høyde for denne stylingen når man besvarte den delen av opgaven. */
+@media (min-width: 1501px) {
+    article {
+        max-width: 50%;
+    }
+    aside{
+        max-width: 50%;
+        float:right;
+        position: absolute;
+        margin-top:0;
+        top: 10.45em;
+        left: 50%;
+        background-color: lightyellow;
+        padding-bottom: 26.2em;
+    }
+}

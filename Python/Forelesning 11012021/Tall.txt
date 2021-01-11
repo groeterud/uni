@@ -1,0 +1,10 @@
+tall 1
+4
+tall 2
+3
+tall 3
+7
+tall 4
+1
+tall 5
+5

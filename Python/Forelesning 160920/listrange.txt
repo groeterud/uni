@@ -1,1 +1,0 @@
-odetall=[range(1,9,2)]

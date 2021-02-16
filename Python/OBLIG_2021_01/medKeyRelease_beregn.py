@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 
+
 def saniter_input(egenkap,nedbet,kjopesum):
     #denne funksjonen har en rekke logiske tester for å verifisere programlogikken og gir brukeren error-meldinger dersom noe ikke er tilfredsstillende.
     laanekalulasjon=False
@@ -142,7 +143,7 @@ ent_nedbet.grid(row=2,column=1,padx=5,pady=(5,0),sticky=W)
 #oppdater scalen når verdi blir tastet
 ent_nedbet.bind("<KeyRelease>", update_nedbet_scale)
 #scale, opppdaterer Entry med verdi fra scalen når den flyttes
-nedbet_scale=Scale(window, from_=0, to=15, orient=HORIZONTAL, length=250,showvalue=0,command=update_nedbet)
+nedbet_scale=Scale(window, from_=1, to=15, orient=HORIZONTAL, length=250,showvalue=0,command=update_nedbet)
 nedbet_scale.grid(row=3, column=0,columnspan=3, padx=5)
 
 

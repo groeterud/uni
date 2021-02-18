@@ -46,7 +46,10 @@ def update_nedbet(event):
 #oppdaterer verdien på nedbetalings-scalaen med inndata, dersom det er numerisk. 
 def update_nedbet_scale(event):
     if (event.char.isnumeric())==True:
-        nedbet_scale.set(int(nedbetalingstid.get()))
+        nedbet=nedbetalingstid.get()
+        #stripper år
+        nedbet=int(nedbet.rstrip(' år'))
+        nedbet_scale.set(nedbet)
     egenkap,nedbet,kjopesum,validert=datavalidering()
     if validert==True:
         beregn()

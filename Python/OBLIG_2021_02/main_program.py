@@ -122,7 +122,23 @@ def ajour():
         print('oppdater_eksamen')
     #funksjon for å slette en eksamen
     def slett_eksamen():
-        print('asda')
+        valgt=lst_eksamener.get(lst_eksamener.curselection())
+        valgt=str(valgt)
+        
+        del_markor=eksamensdatabase.cursor()
+        #gjør den om til kommaserparert streng
+        valgt=valgt.replace('(','').replace(')','').replace(' ','').replace('-','').replace("'","")
+        
+        ans=messagebox.askyesno(title="Bekreft",message='Er du helt sikker på at du vil slette \n'+valgt,parent=ajour_window)
+
+        valgt=valgt.split(',')
+        
+        if ans:
+            #qry=("DELETE FROM eksamen WHERE (Dato='%s' AND Romnr='%s' AND Emnekode='%s')")
+            del_markor.execute("DELETE FROM Eksamen WHERE (Emnekode=%s AND Dato=%s AND Romnr=%s)",(valgt[0],valgt[1],valgt[2],))
+            eksamensdatabase.commit()
+            oppdater_listeboks()
+        del_markor.close()
     
     #henter alle poster med datering etter dagens dato. 
     ajour_markor.execute("SELECT * FROM eksamen WHERE Dato>CURRENT_DATE() ORDER BY Dato ASC")

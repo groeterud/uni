@@ -10,6 +10,25 @@ from tkinter import messagebox
 eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
 
 def ajour():
+    #funksjon for å gjøre en listeboksseleksjon om til en liste. Bruker den to ganger
+    def curselection_to_list(list_name):
+        try:
+            valgt=str(list_name.get(list_name.curselection()))
+            #gjør den om til kommaserparert streng
+            valgt=valgt.replace('(','').replace(')','').replace(' ','').replace('-','').replace("'","")
+            #gjør kommeseparert streng om til liste
+            curselection_list=valgt.split(',')
+            return(curselection_list)
+        #thrower av og til errorer når ingenting er selektert. Har ingenting å si for funksjonaliteten. 
+        except TclError:
+            ingenting_er_selektert=True
+            
+    #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
+    # så de må arve denne variabelen når de ikke kan kalle funksjonen.
+    def oppdater_seleksjon(event):
+            global valgt_liste #Gaddis s258 
+            valgt_liste=curselection_to_list(lst_eksamener)
+    
     #markøren vår
     ajour_markor=eksamensdatabase.cursor()
     #funksjon for å oppdatere listeboksen
@@ -94,7 +113,7 @@ def ajour():
         lbl_emnekode_legg_til.grid(row=0,column=0,padx=5,pady=5,sticky=E)
 
         emnekode_legg_til_SV=StringVar()
-        ent_emnekode_legg_til=Entry(legg_til_vindu,width=8,textvariable=emnekode_legg_til_SV)
+        ent_emnekode_legg_til=Entry(legg_til_vindu,width=10,textvariable=emnekode_legg_til_SV)
         ent_emnekode_legg_til.grid(row=0,column=1,padx=5,pady=5,sticky=W)
 
         lbl_dato_legg_til=Label(legg_til_vindu,text='Dato')
@@ -119,23 +138,85 @@ def ajour():
 
     #funksjon for å oppdatere en eksamen    
     def oppdater_eksamen():
-        print('oppdater_eksamen')
+               
+        def populere_enter():
+            ##henter ut seleksjonen fra listeboksen og hiver de rent i en liste. 
+            #valgt_liste=curselection_to_list(lst_eksamener)
+            #setter entene
+            emnekode_updt_SV.set(valgt_liste[0])
+            dato_updt_SV.set(valgt_liste[1])
+            rom_updt_SV.set(valgt_liste[2])
+        
+        #funksjon for å skrive til databasen
+        def oppdater():
+            #oppdaterer variabler med nye verdier fra entene
+            emnekode=emnekode_updt_SV.get()
+            dato=dato_updt_SV.get()
+            rom=rom_updt_SV.get()
+
+            
+            #lager markøren vår
+            updt_markor=eksamensdatabase.cursor()
+            query=("UPDATE Eksamen SET Emnekode=%s,Dato=%s,Romnr=%s WHERE Emnekode=%s AND Dato=%s AND Romnr=%s")
+            data=(emnekode,dato,rom,valgt_liste[0],valgt_liste[1],valgt_liste[2])
+        
+            updt_markor.execute(query,data)
+            #commiter og lukker markøren
+            eksamensdatabase.commit()
+            updt_markor.close()
+            #vi har lagt inn ny gyldig data, så vi oppdaterer listeboksen vår. 
+            oppdater_listeboks()
+            #Bekreftelse for bruker
+            messagebox.showinfo('Vellykket','Følgende endringer ble lagret:\n'+emnekode+' '+dato+' '+rom,parent=updt_vindu)
+                
+
+        #gui - låner struktur fra legg til, iom at det er samme vindu, bare med litt annen tekst.
+        updt_vindu=Toplevel()
+        updt_vindu.title('Oppdater eksamen')
+
+        lbl_emnekode_updt=Label(updt_vindu,text='Emnekode')
+        lbl_emnekode_updt.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+        emnekode_updt_SV=StringVar()
+        ent_emnekode_updt=Entry(updt_vindu,width=10,textvariable=emnekode_updt_SV)
+        ent_emnekode_updt.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_dato_updt=Label(updt_vindu,text='Dato')
+        lbl_dato_updt.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+
+        dato_updt_SV=StringVar()
+        ent_dato_updt=Entry(updt_vindu,width=8,textvariable=dato_updt_SV)
+        ent_dato_updt.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_rom_updt=Label(updt_vindu,text='Rom')
+        lbl_rom_updt.grid(row=2,column=0,padx=5,pady=5,sticky=E)
+
+        rom_updt_SV=StringVar()
+        ent_rom_updt=Entry(updt_vindu,width=4,textvariable=rom_updt_SV)
+        ent_rom_updt.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+
+        btn_updt=Button(updt_vindu,text='Oppdater',width=6,command=oppdater)
+        btn_updt.grid(row=3,column=0,padx=5,pady=(10,5),sticky=W)
+
+        btn_avslutt_updt=Button(updt_vindu,text='Avslutt',width=8,command=updt_vindu.destroy)
+        btn_avslutt_updt.grid(row=3,column=1,padx=5,pady=(10,5),sticky=E)
+
+        #kjører en funksjon for å oppdatere ent'ene med eksisterende info. 
+        populere_enter()
+
+
     #funksjon for å slette en eksamen
     def slett_eksamen():
-        valgt=lst_eksamener.get(lst_eksamener.curselection())
-        valgt=str(valgt)
-        
-        del_markor=eksamensdatabase.cursor()
-        #gjør den om til kommaserparert streng
-        valgt=valgt.replace('(','').replace(')','').replace(' ','').replace('-','').replace("'","")
+        valgt=str(lst_eksamener.get(lst_eksamener.curselection()))
         
         ans=messagebox.askyesno(title="Bekreft",message='Er du helt sikker på at du vil slette \n'+valgt,parent=ajour_window)
+        del_markor=eksamensdatabase.cursor()
+        #kaller på funksjonen for å få tilbake seleksjonen over som en liste. 
+        #valgt_liste=curselection_to_list(lst_eksamener)
 
-        valgt=valgt.split(',')
-        
         if ans:
             #qry=("DELETE FROM eksamen WHERE (Dato='%s' AND Romnr='%s' AND Emnekode='%s')")
-            del_markor.execute("DELETE FROM Eksamen WHERE (Emnekode=%s AND Dato=%s AND Romnr=%s)",(valgt[0],valgt[1],valgt[2],))
+            del_markor.execute("DELETE FROM Eksamen WHERE (Emnekode=%s AND Dato=%s AND Romnr=%s)",(valgt_liste[0],valgt_liste[1],valgt_liste[2],))
             eksamensdatabase.commit()
             oppdater_listeboks()
         del_markor.close()
@@ -161,7 +242,7 @@ def ajour():
     innhold_i_eksamensliste=StringVar()
     lst_eksamener=Listbox(ajour_window,width=50,height=8,listvariable=innhold_i_eksamensliste,yscrollcommand=y_scroll.set)
     lst_eksamener.grid(row=1,column=1,rowspan=8,padx=(5,0),pady=5,sticky=E)
-
+    lst_eksamener.bind('<<ListboxSelect>>',oppdater_seleksjon)
     innhold_i_eksamensliste.set(tuple(post_list))
 
     #knapper
@@ -179,7 +260,6 @@ def ajour():
     btn_avslutt_ajour.grid(row=9,column=1,padx=5,pady=5,sticky=E)
 
     ajour_markor.close()
-
 
 def registrer_eksamensresultat():
     print('registrer_eksamensresultat')

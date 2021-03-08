@@ -4,8 +4,8 @@ import mysql.connector
 from tkinter import *
 from tkinter import messagebox
 
-mindatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
-markor_eksamen=mindatabase.cursor()
+eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
+markor_eksamen=eksamensdatabase.cursor()
 
 print('Klar for å skrive inn ny eksamensdato ')
 ok=True
@@ -30,6 +30,6 @@ if ok:
     query=('INSERT INTO eksamensresultat(Studentnr,Emnekode,Dato,Karakter) VALUES (%s,%s,%s,%s)')
     data=(studentnr,emnekode,dato,karakter)
     markor_eksamen.execute(query,data)
-    mindatabase.commit()
+    eksamensdatabase.commit()
 
 

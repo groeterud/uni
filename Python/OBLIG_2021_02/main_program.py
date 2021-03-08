@@ -1,9 +1,170 @@
 import mysql.connector
 from tkinter import *
 from tkinter import messagebox
+#vi starter med denne regelen, jeg har ALT jeg kan ha inne i en enkelt funksjon. 
+#så fort en annen funksjon kan ha bruk for det, flytter vi det utenfor
+#enten som en egen funkson eller som globale variabler. 
+#Vi skriver ikke duplikat kode, da får den en egen funksjon.
+
+#connection til databasen: 
+eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
 
 def ajour():
-    print('ajour')
+    #markøren vår
+    ajour_markor=eksamensdatabase.cursor()
+    #funksjon for å oppdatere listeboksen
+    def oppdater_listeboks():
+        updt_markor=eksamensdatabase.cursor()
+        updt_markor.execute("SELECT * FROM eksamen WHERE Dato>CURRENT_DATE() ORDER BY Dato ASC")
+        
+        #hiver det inn i en tom liste
+        ny_post_list=[]
+        for row in updt_markor:
+            ny_post_list+=[row]
+        
+        #sletter alt som er i listeboksen
+        lst_eksamener.delete(0,END)
+
+        for x in range(len(ny_post_list)):
+            #legger inn alt fra tabellen inn i listeboksen
+            lst_eksamener.insert(END,ny_post_list[x])
+        updt_markor.close()
+           
+    #eksisterer fordi vi må sjekke duplukat både på oppdatering og oppretting
+    def sjekk_rom_dato_duplikat(dato,romnr):
+        duplikat=False
+        #henter på nytt i tilfelle databasen har blitt oppdatert siden tidligere. 
+        duplikat_markor=eksamensdatabase.cursor()
+        duplikat_markor.execute("SELECT * FROM eksamen WHERE Dato>CURRENT_DATE() ORDER BY Dato ASC")
+        
+        #hiver det inn i en tom liste
+        dup_post_list=[]
+        for row in duplikat_markor:
+            dup_post_list+=[row]
+
+        
+        #gjør duplikatsjekken vår
+        for x in range(len(dup_post_list)):
+            datofix=str(dup_post_list[x][1])
+            #i listeformatet finnes datoen med bindestreker, vi fjerner de for å matche forventet input
+            datofix=datofix.replace('-','')
+            print(dato)
+            print(datofix)
+            if romnr==dup_post_list[x][2] and dato==datofix:
+                duplikat=True
+        
+        duplikat_markor.close()
+        return (duplikat)
+
+    #funksjon for å legge til ny eksamen
+    def legg_til_eksamen():
+        def lagre_legg_til():
+            emnekode=emnekode_legg_til_SV.get()
+            dato=dato_legg_til_SV.get()
+            rom=rom_legg_til_SV.get()
+
+            duplikat=sjekk_rom_dato_duplikat(dato,rom)
+
+            if duplikat==False:
+                #lager markøren vår
+                legg_til_markor=eksamensdatabase.cursor()
+                query=("INSERT INTO Eksamen VALUES (%s,%s,%s)")
+                data=(emnekode,dato,rom)
+                legg_til_markor.execute(query,data)
+                #commiter og lukker markøren
+                eksamensdatabase.commit()
+                legg_til_markor.close()
+                #vi har lagt inn ny gyldig data, så vi oppdaterer listeboksen vår. 
+                oppdater_listeboks()
+                #Bekreftelse for bruker
+                messagebox.showinfo('Vellykket','Følgende data ble lagret!:'+str(data),parent=ajour_window)
+                
+            else:
+                messagebox.showinfo('Feil','Fant duplisert dato og rom. Vennligst prøv igjen',parent=ajour_window)
+            
+            
+            legg_til_vindu.destroy()
+
+
+        #her må vi ha nytt vindu, vi bygger GUI
+        legg_til_vindu=Toplevel()
+        legg_til_vindu.title('Legg til ny eksamen')
+
+        lbl_emnekode_legg_til=Label(legg_til_vindu,text='Emnekode')
+        lbl_emnekode_legg_til.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+        emnekode_legg_til_SV=StringVar()
+        ent_emnekode_legg_til=Entry(legg_til_vindu,width=8,textvariable=emnekode_legg_til_SV)
+        ent_emnekode_legg_til.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_dato_legg_til=Label(legg_til_vindu,text='Dato')
+        lbl_dato_legg_til.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+
+        dato_legg_til_SV=StringVar()
+        ent_dato_legg_til=Entry(legg_til_vindu,width=8,textvariable=dato_legg_til_SV)
+        ent_dato_legg_til.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_rom_legg_til=Label(legg_til_vindu,text='Rom')
+        lbl_rom_legg_til.grid(row=2,column=0,padx=5,pady=5,sticky=E)
+
+        rom_legg_til_SV=StringVar()
+        ent_rom_legg_til=Entry(legg_til_vindu,width=4,textvariable=rom_legg_til_SV)
+        ent_rom_legg_til.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+
+        btn_lagre_legg_til=Button(legg_til_vindu,text='Lagre',width=6,command=lagre_legg_til)
+        btn_lagre_legg_til.grid(row=3,column=0,padx=5,pady=(10,5),sticky=W)
+
+        btn_avslutt_legg_til=Button(legg_til_vindu,text='Avslutt',width=8,command=legg_til_vindu.destroy)
+        btn_avslutt_legg_til.grid(row=3,column=1,padx=5,pady=(10,5),sticky=E)
+
+    #funksjon for å oppdatere en eksamen    
+    def oppdater_eksamen():
+        print('oppdater_eksamen')
+    #funksjon for å slette en eksamen
+    def slett_eksamen():
+        print('asda')
+    
+    #henter alle poster med datering etter dagens dato. 
+    ajour_markor.execute("SELECT * FROM eksamen WHERE Dato>CURRENT_DATE() ORDER BY Dato ASC")
+
+    #hiver det inn i en tom liste
+    post_list=[]
+    for row in ajour_markor:
+        post_list+=[row]
+    
+    #GUI for ajourføring
+    ajour_window=Toplevel()
+    ajour_window.title('Ajourføring av fremtidige eksamener')
+
+    lst_label=Label(ajour_window,text='Emnekode | Dato | Rom')
+    lst_label.grid(row=0,column=1,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll=Scrollbar(ajour_window,orient=VERTICAL)
+    y_scroll.grid(row=1,column=2,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_eksamensliste=StringVar()
+    lst_eksamener=Listbox(ajour_window,width=50,height=8,listvariable=innhold_i_eksamensliste,yscrollcommand=y_scroll.set)
+    lst_eksamener.grid(row=1,column=1,rowspan=8,padx=(5,0),pady=5,sticky=E)
+
+    innhold_i_eksamensliste.set(tuple(post_list))
+
+    #knapper
+    btn_legg_til=Button(ajour_window,text='Legg til ny eksamen',width=15,command=legg_til_eksamen)
+    btn_legg_til.grid(row=1,column=0,padx=5,pady=(5,5),sticky=W)
+
+    btn_oppdater_eksamen=Button(ajour_window,text='Oppdater valgt eksamen',width=18,command=oppdater_eksamen)
+    btn_oppdater_eksamen.grid(row=2,column=0,padx=5,pady=5,sticky=W)
+
+    btn_slett_eksamen=Button(ajour_window,text='Slett valgt eksamen',width=15,command=slett_eksamen)
+    btn_slett_eksamen.grid(row=3,column=0,padx=5,pady=5,sticky=W)
+
+    #avslutt
+    btn_avslutt_ajour=Button(ajour_window,text='Lukk vindu',width=10,command=ajour_window.destroy)
+    btn_avslutt_ajour.grid(row=9,column=1,padx=5,pady=5,sticky=E)
+
+    ajour_markor.close()
+
+
 def registrer_eksamensresultat():
     print('registrer_eksamensresultat')
 def vis_emneresultater():

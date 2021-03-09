@@ -149,20 +149,25 @@ def ajour():
             dato=dato_updt_SV.get()
             rom=rom_updt_SV.get()
 
+            duplikat=sjekk_rom_dato_duplikat(dato,rom)
+
+            if duplikat==False:
+
+                #lager markøren vår
+                updt_markor=eksamensdatabase.cursor()
+                query=("UPDATE Eksamen SET Emnekode=%s,Dato=%s,Romnr=%s WHERE Emnekode=%s AND Dato=%s AND Romnr=%s")
+                data=(emnekode,dato,rom,valgt_liste_ajour[0],valgt_liste_ajour[1],valgt_liste_ajour[2])
             
-            #lager markøren vår
-            updt_markor=eksamensdatabase.cursor()
-            query=("UPDATE Eksamen SET Emnekode=%s,Dato=%s,Romnr=%s WHERE Emnekode=%s AND Dato=%s AND Romnr=%s")
-            data=(emnekode,dato,rom,valgt_liste_ajour[0],valgt_liste_ajour[1],valgt_liste_ajour[2])
-        
-            updt_markor.execute(query,data)
-            #commiter og lukker markøren
-            eksamensdatabase.commit()
-            updt_markor.close()
-            #vi har lagt inn ny gyldig data, så vi oppdaterer listeboksen vår. 
-            oppdater_listeboks()
-            #Bekreftelse for bruker
-            messagebox.showinfo('Vellykket','Følgende endringer ble lagret:\n'+emnekode+' '+dato+' '+rom,parent=updt_vindu)
+                updt_markor.execute(query,data)
+                #commiter og lukker markøren
+                eksamensdatabase.commit()
+                updt_markor.close()
+                #vi har lagt inn ny gyldig data, så vi oppdaterer listeboksen vår. 
+                oppdater_listeboks()
+                #Bekreftelse for bruker
+                messagebox.showinfo('Vellykket','Følgende endringer ble lagret:\n'+emnekode+' '+dato+' '+rom,parent=updt_vindu)
+            else:
+                messagebox.showinfo('Feil','Fant duplisert dato og rom. Vennligst prøv igjen',parent=updt_vindu)
                 
 
         #gui - låner struktur fra legg til, iom at det er samme vindu, bare med litt annen tekst.

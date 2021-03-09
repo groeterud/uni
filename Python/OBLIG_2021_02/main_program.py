@@ -195,7 +195,7 @@ def ajour():
         ent_rom_updt=Entry(updt_vindu,width=4,textvariable=rom_updt_SV)
         ent_rom_updt.grid(row=2,column=1,padx=5,pady=5,sticky=W)
 
-        btn_updt=Button(updt_vindu,text='Oppdater',width=6,command=oppdater)
+        btn_updt=Button(updt_vindu,text='Oppdater',width=8,command=oppdater)
         btn_updt.grid(row=3,column=0,padx=5,pady=(10,5),sticky=W)
 
         btn_avslutt_updt=Button(updt_vindu,text='Avslutt',width=8,command=updt_vindu.destroy)

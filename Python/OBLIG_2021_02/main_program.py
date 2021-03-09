@@ -18,6 +18,7 @@ def curselection_to_list(list_name):
     except TclError:
         ingenting_er_selektert=True  
 
+#ajourføring av fremtidige eksamener
 def ajour():     
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
     # så de må arve denne variabelen når de ikke kan kalle funksjonen.

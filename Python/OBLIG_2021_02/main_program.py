@@ -64,8 +64,6 @@ def ajour():
             datofix=str(dup_post_list[x][1])
             #i listeformatet finnes datoen med bindestreker, vi fjerner de for å matche forventet input
             datofix=datofix.replace('-','')
-            print(dato)
-            print(datofix)
             if romnr==dup_post_list[x][2] and dato==datofix:
                 duplikat=True
         
@@ -233,14 +231,16 @@ def ajour():
     lst_label=Label(ajour_window,text='Emnekode | Dato | Rom')
     lst_label.grid(row=0,column=1,padx=5,pady=(5,0),sticky=W)
     #scrollbar
-    y_scroll=Scrollbar(ajour_window,orient=VERTICAL)
-    y_scroll.grid(row=1,column=2,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+    y_scroll_eksamener=Scrollbar(ajour_window,orient=VERTICAL)
+    y_scroll_eksamener.grid(row=1,column=2,rowspan=8,padx=(0,5),pady=5,sticky=NS)
 
     innhold_i_eksamensliste=StringVar()
-    lst_eksamener=Listbox(ajour_window,width=50,height=8,listvariable=innhold_i_eksamensliste,yscrollcommand=y_scroll.set)
+    lst_eksamener=Listbox(ajour_window,width=50,height=8,listvariable=innhold_i_eksamensliste,yscrollcommand=y_scroll_eksamener.set)
     lst_eksamener.grid(row=1,column=1,rowspan=8,padx=(5,0),pady=5,sticky=E)
     lst_eksamener.bind('<<ListboxSelect>>',oppdater_seleksjon)
     innhold_i_eksamensliste.set(tuple(post_list))
+
+    y_scroll_eksamener['command']=lst_eksamener.yview
 
     #knapper
     btn_legg_til=Button(ajour_window,text='Legg til ny eksamen',width=15,command=legg_til_eksamen)
@@ -329,14 +329,16 @@ def registrer_eksamensresultat():
     lst_label_reg=Label(reg_eks_window,text='Emnekode | Dato | Rom')
     lst_label_reg.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
     #scrollbar
-    y_scroll=Scrollbar(reg_eks_window,orient=VERTICAL)
-    y_scroll.grid(row=1,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+    y_scroll_reg=Scrollbar(reg_eks_window,orient=VERTICAL)
+    y_scroll_reg.grid(row=1,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
 
     innhold_i_eksamensliste_reg=StringVar()
-    lst_eksamener_reg=Listbox(reg_eks_window,width=50,height=8,listvariable=innhold_i_eksamensliste_reg,yscrollcommand=y_scroll.set)
+    lst_eksamener_reg=Listbox(reg_eks_window,width=50,height=8,listvariable=innhold_i_eksamensliste_reg,yscrollcommand=y_scroll_reg.set)
     lst_eksamener_reg.grid(row=1,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
     lst_eksamener_reg.bind('<<ListboxSelect>>',oppdater_seleksjon_reg)
     innhold_i_eksamensliste_reg.set(tuple(post_list_reg))
+
+    y_scroll_reg['command']=lst_eksamener_reg.yview
 
     #knapper
     btn_legg_til_reg=Button(reg_eks_window,text='Legg til eksamensresultat for valgt eksamen',width=34,command=legg_til_eksamensresultat)

@@ -1,33 +1,29 @@
 import mysql.connector
 from tkinter import *
 from tkinter import messagebox
-#vi starter med denne regelen, jeg har ALT jeg kan ha inne i en enkelt funksjon. 
-#så fort en annen funksjon kan ha bruk for det, flytter vi det utenfor
-#enten som en egen funkson eller som globale variabler. 
-#Vi skriver ikke duplikat kode, da får den en egen funksjon.
 
 #connection til databasen: 
 eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
 
-def ajour():
-    #funksjon for å gjøre en listeboksseleksjon om til en liste. Bruker den to ganger
-    def curselection_to_list(list_name):
-        try:
-            valgt=str(list_name.get(list_name.curselection()))
-            #gjør den om til kommaserparert streng
-            valgt=valgt.replace('(','').replace(')','').replace(' ','').replace('-','').replace("'","")
-            #gjør kommeseparert streng om til liste
-            curselection_list=valgt.split(',')
-            return(curselection_list)
-        #thrower av og til errorer når ingenting er selektert. Har ingenting å si for funksjonaliteten. 
-        except TclError:
-            ingenting_er_selektert=True
-            
+#funksjon for å gjøre en listeboksseleksjon om til en liste. Bruker den i flere funksjoner
+def curselection_to_list(list_name):
+    try:
+        valgt=str(list_name.get(list_name.curselection()))
+        #gjør den om til kommaserparert streng
+        valgt=valgt.replace('(','').replace(')','').replace(' ','').replace('-','').replace("'","")
+        #gjør kommeseparert streng om til liste
+        curselection_list=valgt.split(',')
+        return(curselection_list)
+    #thrower av og til errorer når ingenting er selektert. Har ingenting å si for funksjonaliteten. 
+    except TclError:
+        ingenting_er_selektert=True  
+
+def ajour():     
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
     # så de må arve denne variabelen når de ikke kan kalle funksjonen.
     def oppdater_seleksjon(event):
-            global valgt_liste #Gaddis s258 
-            valgt_liste=curselection_to_list(lst_eksamener)
+            global valgt_liste_ajour #Gaddis s258 
+            valgt_liste_ajour=curselection_to_list(lst_eksamener)
     
     #markøren vår
     ajour_markor=eksamensdatabase.cursor()
@@ -143,9 +139,9 @@ def ajour():
             ##henter ut seleksjonen fra listeboksen og hiver de rent i en liste. 
             #valgt_liste=curselection_to_list(lst_eksamener)
             #setter entene
-            emnekode_updt_SV.set(valgt_liste[0])
-            dato_updt_SV.set(valgt_liste[1])
-            rom_updt_SV.set(valgt_liste[2])
+            emnekode_updt_SV.set(valgt_liste_ajour[0])
+            dato_updt_SV.set(valgt_liste_ajour[1])
+            rom_updt_SV.set(valgt_liste_ajour[2])
         
         #funksjon for å skrive til databasen
         def oppdater():
@@ -158,7 +154,7 @@ def ajour():
             #lager markøren vår
             updt_markor=eksamensdatabase.cursor()
             query=("UPDATE Eksamen SET Emnekode=%s,Dato=%s,Romnr=%s WHERE Emnekode=%s AND Dato=%s AND Romnr=%s")
-            data=(emnekode,dato,rom,valgt_liste[0],valgt_liste[1],valgt_liste[2])
+            data=(emnekode,dato,rom,valgt_liste_ajour[0],valgt_liste_ajour[1],valgt_liste_ajour[2])
         
             updt_markor.execute(query,data)
             #commiter og lukker markøren
@@ -216,7 +212,7 @@ def ajour():
 
         if ans:
             #qry=("DELETE FROM eksamen WHERE (Dato='%s' AND Romnr='%s' AND Emnekode='%s')")
-            del_markor.execute("DELETE FROM Eksamen WHERE (Emnekode=%s AND Dato=%s AND Romnr=%s)",(valgt_liste[0],valgt_liste[1],valgt_liste[2],))
+            del_markor.execute("DELETE FROM Eksamen WHERE (Emnekode=%s AND Dato=%s AND Romnr=%s)",(valgt_liste_ajour[0],valgt_liste_ajour[1],valgt_liste_ajour[2],))
             eksamensdatabase.commit()
             oppdater_listeboks()
         del_markor.close()
@@ -261,8 +257,96 @@ def ajour():
 
     ajour_markor.close()
 
+#registrerer flere eksamensresultat for en avholdt eksamen.  
 def registrer_eksamensresultat():
-    print('registrer_eksamensresultat')
+    reg_markor=eksamensdatabase.cursor()
+
+    def oppdater_seleksjon_reg(event):
+        global valgt_liste_reg #Gaddis s258 
+        valgt_liste_reg=curselection_to_list(lst_eksamener_reg)
+
+    def legg_til_eksamensresultat():
+        def lagre_legg_til_reg():
+            #henter inn verdier som skal lagres
+            studentnr_reg=studentnr_reg_SV.get()
+            karakter_reg=karakter_reg_SV.get()
+
+            #lager oss en lagringsmarkør. 
+            markor_lagre_reg=eksamensdatabase.cursor()
+            #Eksamensresultat(_Studentnr*_,_Emnekode*_,_Dato*_,Karakter)
+            qry=("INSERT INTO Eksamensresultat VALUES (%s,%s,%s,%s)")
+            data=(studentnr_reg,emnekode_reg,dato_reg,karakter_reg)
+            #exuter inserten
+            markor_lagre_reg.execute(qry,data)
+            #commiter endringen og lukker markøren
+            eksamensdatabase.commit()
+            markor_lagre_reg.close()
+
+
+            messagebox.showinfo('Vellykket','Følgende data ble lagret!:\n'+str(data),parent=legg_til_vindu_reg)
+        #fanger emnekode og dato for seleksjonen.     
+        emnekode_reg=valgt_liste_reg[0]
+        dato_reg=valgt_liste_reg[1]
+        #her må vi ha nytt vindu, vi bygger GUI
+        legg_til_vindu_reg=Toplevel()
+        legg_til_vindu_reg.title('Legg til eksamensresultater for valgt emnme')
+
+        lbl_studentnr_reg=Label(legg_til_vindu_reg,text='Studentnr')
+        lbl_studentnr_reg.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+        studentnr_reg_SV=StringVar()
+        ent_studentnr_reg=Entry(legg_til_vindu_reg,width=7,textvariable=studentnr_reg_SV)
+        ent_studentnr_reg.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_karakter_reg=Label(legg_til_vindu_reg,text='Karakter')
+        lbl_karakter_reg.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+
+        karakter_reg_SV=StringVar()
+        ent_karakter_reg=Entry(legg_til_vindu_reg,width=2,textvariable=karakter_reg_SV)
+        ent_karakter_reg.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+        #knapper
+        btn_lagre_legg_til_reg=Button(legg_til_vindu_reg,text='Lagre',width=6,command=lagre_legg_til_reg)
+        btn_lagre_legg_til_reg.grid(row=3,column=0,padx=5,pady=(10,5),sticky=W)
+
+        btn_avslutt_legg_til_reg=Button(legg_til_vindu_reg,text='Avslutt',width=8,command=legg_til_vindu_reg.destroy)
+        btn_avslutt_legg_til_reg.grid(row=3,column=1,padx=5,pady=(10,5),sticky=E)
+
+    #henter alle poster med datering etter dagens dato. 
+    reg_markor.execute("SELECT * FROM eksamen WHERE Dato<=CURRENT_DATE() ORDER BY Dato DESC")
+
+    #hiver det inn i en tom liste
+    post_list_reg=[]
+    for row in reg_markor:
+        post_list_reg+=[row]
+    
+    
+    #GUI for oversikt over eksamener og meny. 
+    reg_eks_window=Toplevel()
+    reg_eks_window.title('Registrering av eksamesresultater')
+
+    lst_label_reg=Label(reg_eks_window,text='Emnekode | Dato | Rom')
+    lst_label_reg.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll=Scrollbar(reg_eks_window,orient=VERTICAL)
+    y_scroll.grid(row=1,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_eksamensliste_reg=StringVar()
+    lst_eksamener_reg=Listbox(reg_eks_window,width=50,height=8,listvariable=innhold_i_eksamensliste_reg,yscrollcommand=y_scroll.set)
+    lst_eksamener_reg.grid(row=1,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    lst_eksamener_reg.bind('<<ListboxSelect>>',oppdater_seleksjon_reg)
+    innhold_i_eksamensliste_reg.set(tuple(post_list_reg))
+
+    #knapper
+    btn_legg_til_reg=Button(reg_eks_window,text='Legg til eksamensresultat for valgt eksamen',width=34,command=legg_til_eksamensresultat)
+    btn_legg_til_reg.grid(row=9,column=0,padx=5,pady=(5,5),sticky=W)
+
+    #avslutt
+    btn_avslutt_ajour=Button(reg_eks_window,text='Lukk vindu',width=10,command=reg_eks_window.destroy)
+    btn_avslutt_ajour.grid(row=9,column=2,padx=5,pady=5,sticky=E)
+
+    reg_markor.close()
+
 def vis_emneresultater():
     print('vis_emneresultater')
 def vis_eksamensresultater():
@@ -276,50 +360,53 @@ def planlagte_eksamener_dag():
 def planlagte_eksamener_periode():
     print('planlagte_eksamener_periode')
 
-#GUI
-window=Tk()
-window.title('Eksamenshåndtering')
+#kaster det i en main, mest så jeg kan kollapse det og slippe scrolling.
+def main():
+    #GUI
+    window=Tk()
+    window.title('Eksamenshåndtering')
 
-#frame for eksamensmanipulasjon
-eksamensmanipulasjon_frame=LabelFrame(window,text='Eksamensmanipulasjon')
-eksamensmanipulasjon_frame.grid(row=0,column=0,padx=5,pady=10,sticky=N)
+    #frame for eksamensmanipulasjon
+    eksamensmanipulasjon_frame=LabelFrame(window,text='Eksamensmanipulasjon')
+    eksamensmanipulasjon_frame.grid(row=0,column=0,padx=5,pady=10,sticky=N)
 
-#knapper i framen
-btn_registrer_eksamensresultat=Button(eksamensmanipulasjon_frame,text='Legg til eksamensresultat',width=20,command=registrer_eksamensresultat)
-btn_registrer_eksamensresultat.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
+    #knapper i framen
+    btn_registrer_eksamensresultat=Button(eksamensmanipulasjon_frame,text='Legg til eksamensresultater',width=20,command=registrer_eksamensresultat)
+    btn_registrer_eksamensresultat.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
 
-btn_ajour=Button(eksamensmanipulasjon_frame,text='Legg til, slett eller endre eksamen',width=26,command=ajour)
-btn_ajour.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    btn_ajour=Button(eksamensmanipulasjon_frame,text='Legg til, slett eller endre eksamen',width=26,command=ajour)
+    btn_ajour.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
-#frem for enkeltstudent, ble rotete med for mange visninger
-enkeltstudent_frame=LabelFrame(window,text='Visninger for en enkelt student')
-enkeltstudent_frame.grid(row=0,column=1,padx=5,pady=10,sticky=N)
+    #frem for enkeltstudent, ble rotete med for mange visninger
+    enkeltstudent_frame=LabelFrame(window,text='Visninger for en enkelt student')
+    enkeltstudent_frame.grid(row=0,column=1,padx=5,pady=10,sticky=N)
 
-btn_vitnemal=Button(enkeltstudent_frame,text='Vis vitnemål for en student',width=22,command=vitnemal)
-btn_vitnemal.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
+    btn_vitnemal=Button(enkeltstudent_frame,text='Vis vitnemål for en student',width=22,command=vitnemal)
+    btn_vitnemal.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
 
-btn_vis_eksamensresultater_student=Button(enkeltstudent_frame,text='Vis alle eksamensresultater for enkeltstudent',width=34,command=eksamensresultater_student)
-btn_vis_eksamensresultater_student.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    btn_vis_eksamensresultater_student=Button(enkeltstudent_frame,text='Vis alle eksamensresultater for enkeltstudent',width=34,command=eksamensresultater_student)
+    btn_vis_eksamensresultater_student.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
-#frame for visninger
-visninger_frame=LabelFrame(window,text='Øvrige Visninger')
-visninger_frame.grid(row=1,column=0,columnspan=2,padx=5,pady=10,sticky=N)
+    #frame for visninger
+    visninger_frame=LabelFrame(window,text='Øvrige Visninger')
+    visninger_frame.grid(row=1,column=0,columnspan=2,padx=5,pady=10,sticky=N)
 
-#knapper i framet
-btn_vis_eksamensresultater=Button(visninger_frame,text='Vis alle eksamensresultater fra en eksamen',width=33,command=vis_eksamensresultater)
-btn_vis_eksamensresultater.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
+    #knapper i framet
+    btn_vis_eksamensresultater=Button(visninger_frame,text='Vis alle eksamensresultater fra en eksamen',width=33,command=vis_eksamensresultater)
+    btn_vis_eksamensresultater.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
 
-btn_vis_emneresultater=Button(visninger_frame,text='Vis eksamensresultater i et emne',width=26,command=vis_emneresultater)
-btn_vis_emneresultater.grid(row=0,column=1,padx=5,pady=(10,5),sticky=W)
+    btn_vis_emneresultater=Button(visninger_frame,text='Vis eksamensresultater i et emne',width=26,command=vis_emneresultater)
+    btn_vis_emneresultater.grid(row=0,column=1,padx=5,pady=(10,5),sticky=W)
 
-btn_planlagte_eksamener_periode=Button(visninger_frame,text='Vis alle eksamener i en bestemt periode',width=31,command=planlagte_eksamener_periode)
-btn_planlagte_eksamener_periode.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    btn_planlagte_eksamener_periode=Button(visninger_frame,text='Vis alle eksamener i en bestemt periode',width=31,command=planlagte_eksamener_periode)
+    btn_planlagte_eksamener_periode.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
-btn_planlagte_eksamener_dag=Button(visninger_frame,text='Vis alle eksamener på en bestemt dag',width=30,command=planlagte_eksamener_dag)
-btn_planlagte_eksamener_dag.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+    btn_planlagte_eksamener_dag=Button(visninger_frame,text='Vis alle eksamener på en bestemt dag',width=30,command=planlagte_eksamener_dag)
+    btn_planlagte_eksamener_dag.grid(row=1,column=1,padx=5,pady=5,sticky=W)
 
-#Terminer program
-btn_avslutt=Button(window,text='Avslutt',width=10,command=window.destroy)
-btn_avslutt.grid(row=2,column=1,padx=5,pady=5,sticky=E)
+    #Terminer program
+    btn_avslutt=Button(window,text='Avslutt',width=10,command=window.destroy)
+    btn_avslutt.grid(row=2,column=1,padx=5,pady=5,sticky=E)
 
-window.mainloop()
+    window.mainloop()
+main()

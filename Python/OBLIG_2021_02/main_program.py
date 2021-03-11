@@ -58,7 +58,6 @@ def ajour():
         for row in duplikat_markor:
             dup_post_list+=[row]
 
-        
         #gjør duplikatsjekken vår
         for x in range(len(dup_post_list)):
             datofix=str(dup_post_list[x][1])

@@ -2,6 +2,8 @@ import mysql.connector
 from tkinter import *
 from tkinter import messagebox
 
+from mysql.connector.errors import DataError
+
 #connection til databasen: 
 eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
 
@@ -18,6 +20,36 @@ def curselection_to_list(list_name):
     except TclError:
         ingenting_er_selektert=True  
 
+def eksamen_dato_til_liste(nedre,ovre=True):
+    eksamen_dato_markor=eksamensdatabase.cursor()
+    #om bare en dato
+    if ovre==True:
+        qry=('''
+            SELECT *
+            FROM eksamen
+            WHERE Dato=%s
+        ''')
+        data=(nedre)
+        eksamen_dato_markor.execute(qry,(data,))
+    #eller om vi har fått en verdi på ovre
+    else:
+        qry=('''
+            SELECT *
+            FROM eksamen
+            WHERE Dato>=%s AND Dato<=%s
+            ORDER BY Dato
+        ''')
+        data=(nedre,ovre)
+        eksamen_dato_markor.execute(qry,data)
+
+    #lager liste
+    eksamensliste=[]
+    for row in eksamen_dato_markor:
+        eksamensliste+=[row]
+
+    eksamen_dato_markor.close()
+    return(eksamensliste)
+    
 #ajourføring av fremtidige eksamener
 def ajour():     
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
@@ -665,6 +697,7 @@ def eksamensresultater_student():
     btn_avslutt_eksamensresultater_student=Button(eksamensresultater_student_window,text='Lukk vindu',width=10,command=eksamensresultater_student_window.destroy)
     btn_avslutt_eksamensresultater_student.grid(row=11,column=2,padx=5,pady=5,sticky=E)
 
+#vis vitnemål
 def vitnemal():
 
     def vitnemal_sok():
@@ -739,11 +772,97 @@ def vitnemal():
     btn_avslutt_vitnemal=Button(vitnemal_window,text='Lukk vindu',width=10,command=vitnemal_window.destroy)
     btn_avslutt_vitnemal.grid(row=11,column=2,padx=5,pady=5,sticky=E)
 
-def planlagte_eksamener_dag():
-    print('planlagte_eksamener_dag')
+#viser alle eksamener på en gitt dag
+def eksamener_dag():
+    def vis_eksamener():
+        #henter dato fra input
+        dato_inn=eksamener_dag_dato_sv.get()
+        #får en liste ut fra SQL spørring på datoen
+        eksamensliste=eksamen_dato_til_liste(dato_inn)
+        #setter listen inn i listeboksen
+        innhold_i_liste_eksamener_dag.set(eksamensliste)
+        
+    #GUI  
+    eksamener_dag_window=Toplevel()
+    eksamener_dag_window.title('Alle eksamener på en enkelt dag')
 
-def planlagte_eksamener_periode():
-    print('planlagte_eksamener_periode')
+    eksamener_dag_frame=LabelFrame(eksamener_dag_window,text='Søk opp dato')
+    eksamener_dag_frame.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+    eksamener_dag_lbl_dato=Label(eksamener_dag_frame,text='Dato (ÅÅÅÅMMDD):')
+    eksamener_dag_lbl_dato.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+    eksamener_dag_dato_sv=StringVar()
+    eksamener_dag_ent_dato=Entry(eksamener_dag_frame,textvariable=eksamener_dag_dato_sv,width=10)
+    eksamener_dag_ent_dato.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    btn_vis_eksamener=Button(eksamener_dag_frame,text='Søk',width=6,command=vis_eksamener)
+    btn_vis_eksamener.grid(row=0,column=2,padx=5,pady=5,sticky=E)
+
+    lst_label_eksamener_dag=Label(eksamener_dag_window,text='Emnekode | Dato | Romnr')
+    lst_label_eksamener_dag.grid(row=1,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll_eksamener_dag=Scrollbar(eksamener_dag_window,orient=VERTICAL)
+    y_scroll_eksamener_dag.grid(row=2,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_liste_eksamener_dag=StringVar()
+    lst_eksamener_eksamener_dag=Listbox(eksamener_dag_window,width=65,height=8,listvariable=innhold_i_liste_eksamener_dag,yscrollcommand=y_scroll_eksamener_dag.set)
+    lst_eksamener_eksamener_dag.grid(row=3,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    y_scroll_eksamener_dag['command']=lst_eksamener_eksamener_dag.yview
+
+    #avslutt
+    btn_avslutt_eksamener_dag=Button(eksamener_dag_window,text='Lukk vindu',width=10,command=eksamener_dag_window.destroy)
+    btn_avslutt_eksamener_dag.grid(row=11,column=2,padx=5,pady=5,sticky=E)
+
+#viser alle eksamener i en gitt periode
+def eksamener_periode():
+    def vis_eksamener_periode():
+        #henter dato fra input
+        dato_nedre=eksamener_periode_dato_sv_nedre.get()
+        dato_ovre=eksamener_periode_dato_sv_ovre.get()
+        #får en liste ut fra SQL spørring på datoen
+        eksamensliste=eksamen_dato_til_liste(dato_nedre,dato_ovre)
+        #setter listen inn i listeboksen
+        innhold_i_liste_eksamener_periode.set(eksamensliste)
+        
+    #GUI  
+    eksamener_periode_window=Toplevel()
+    eksamener_periode_window.title('Alle eksamener i en periode')
+
+    eksamener_periode_frame=LabelFrame(eksamener_periode_window,text='Tidsperiode')
+    eksamener_periode_frame.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+    eksamener_periode_lbl_dato_nedre=Label(eksamener_periode_frame,text='Startdato (ÅÅÅÅMMDD):')
+    eksamener_periode_lbl_dato_nedre.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+    eksamener_periode_dato_sv_nedre=StringVar()
+    eksamener_periode_ent_dato_nedre=Entry(eksamener_periode_frame,textvariable=eksamener_periode_dato_sv_nedre,width=10)
+    eksamener_periode_ent_dato_nedre.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    eksamener_periode_lbl_dato_ovre=Label(eksamener_periode_frame,text='Sluttdato (ÅÅÅÅMMDD):')
+    eksamener_periode_lbl_dato_ovre.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+
+    eksamener_periode_dato_sv_ovre=StringVar()
+    eksamener_periode_ent_dato_ovre=Entry(eksamener_periode_frame,textvariable=eksamener_periode_dato_sv_ovre,width=10)
+    eksamener_periode_ent_dato_ovre.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+    btn_vis_eksamener=Button(eksamener_periode_frame,text='Søk',width=6,command=vis_eksamener_periode)
+    btn_vis_eksamener.grid(row=1,column=2,padx=5,pady=5,sticky=E)
+
+    lst_label_eksamener_periode=Label(eksamener_periode_window,text='Emnekode | Dato | Romnr')
+    lst_label_eksamener_periode.grid(row=1,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll_eksamener_periode=Scrollbar(eksamener_periode_window,orient=VERTICAL)
+    y_scroll_eksamener_periode.grid(row=2,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_liste_eksamener_periode=StringVar()
+    lst_eksamener_eksamener_periode=Listbox(eksamener_periode_window,width=65,height=8,listvariable=innhold_i_liste_eksamener_periode,yscrollcommand=y_scroll_eksamener_periode.set)
+    lst_eksamener_eksamener_periode.grid(row=3,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    y_scroll_eksamener_periode['command']=lst_eksamener_eksamener_periode.yview
+
+    #avslutt
+    btn_avslutt_eksamener_periode=Button(eksamener_periode_window,text='Lukk vindu',width=10,command=eksamener_periode_window.destroy)
+    btn_avslutt_eksamener_periode.grid(row=11,column=2,padx=5,pady=5,sticky=E)
 
 #kaster det i en main, mest så jeg kan kollapse det og slippe scrolling.
 def main():
@@ -783,11 +902,11 @@ def main():
     btn_vis_emneresultater=Button(visninger_frame,text='Vis eksamensresultater i et emne',width=26,command=vis_emneresultater)
     btn_vis_emneresultater.grid(row=0,column=1,padx=5,pady=(10,5),sticky=W)
 
-    btn_planlagte_eksamener_periode=Button(visninger_frame,text='Vis alle eksamener i en bestemt periode',width=31,command=planlagte_eksamener_periode)
-    btn_planlagte_eksamener_periode.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    btn_eksamener_periode=Button(visninger_frame,text='Vis alle eksamener i en bestemt periode',width=31,command=eksamener_periode)
+    btn_eksamener_periode.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
-    btn_planlagte_eksamener_dag=Button(visninger_frame,text='Vis alle eksamener på en bestemt dag',width=30,command=planlagte_eksamener_dag)
-    btn_planlagte_eksamener_dag.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+    btn_eksamener_dag=Button(visninger_frame,text='Vis alle eksamener på en bestemt dag',width=30,command=eksamener_dag)
+    btn_eksamener_dag.grid(row=1,column=1,padx=5,pady=5,sticky=W)
 
     #Terminer program
     btn_avslutt=Button(window,text='Avslutt',width=10,command=window.destroy)

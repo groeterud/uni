@@ -23,7 +23,11 @@ def ajour():
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
     # så de må arve denne variabelen når de ikke kan kalle funksjonen.
     def oppdater_seleksjon(event):
-            global valgt_liste_ajour #Gaddis s258 
+            #NBNB: OM DU HAR TID 
+                #OM du selekterer en popup, så forsvinner seleksjonen i listeboksen, og den gamle lista blir overskrevet med en tom liste
+                #Dette thrower en error. 
+                # OM du har tid, finn en måte å ta vare på siste gyldige seleksjon og skriv en 'if valg_liste_ajour==None --> erstatt med gammel verdi. 
+            global valgt_liste_ajour #Gaddis s258
             valgt_liste_ajour=curselection_to_list(lst_eksamener)
     
     #markøren vår
@@ -58,7 +62,6 @@ def ajour():
         for row in duplikat_markor:
             dup_post_list+=[row]
 
-        
         #gjør duplikatsjekken vår
         for x in range(len(dup_post_list)):
             datofix=str(dup_post_list[x][1])
@@ -152,7 +155,6 @@ def ajour():
             duplikat=sjekk_rom_dato_duplikat(dato,rom)
 
             if duplikat==False:
-
                 #lager markøren vår
                 updt_markor=eksamensdatabase.cursor()
                 query=("UPDATE Eksamen SET Emnekode=%s,Dato=%s,Romnr=%s WHERE Emnekode=%s AND Dato=%s AND Romnr=%s")
@@ -355,8 +357,88 @@ def registrer_eksamensresultat():
 
     reg_markor.close()
 
+#resultater for enkelt emne
 def vis_emneresultater():
-    print('vis_emneresultater')
+    def oppdater_seleksjon_emne(event):
+        global valgt_liste_emne #Gaddis s258 
+        #skulle ønske jeg kunne passe argumenter med bind så jeg kunne bare hatt en funksjon og variabel på dette... 
+        valgt_liste_emne=curselection_to_list(lst_eksamener_emneresultat)
+        
+    def vis_emneresultat_valg():
+        valgt=valgt_liste_emne[0]
+
+        qry=('''
+            SELECT Studentnr,Karakter,Dato AS Eksamensdato
+            FROM eksamensresultat
+            WHERE Emnekode=%s
+            ORDER BY Studentnr
+            ''')
+        #lager markør
+        emneresultat_valg_markor=eksamensdatabase.cursor()
+        emneresultat_valg_markor.execute(qry,(valgt,))
+        
+        post_list_emneresultat_valg=[]
+        for row in emneresultat_valg_markor:
+            post_list_emneresultat_valg+=[row]
+
+        #GUI  
+        emneresultat_valg_window=Toplevel()
+        emneresultat_valg_window.title('Resultater for valgt emne')
+
+        lst_label_emneresultat_valg=Label(emneresultat_valg_window,text='Studentnr | Karakter | Dato')
+        lst_label_emneresultat_valg.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
+        #scrollbar
+        y_scroll_emneresultat_valg=Scrollbar(emneresultat_valg_window,orient=VERTICAL)
+        y_scroll_emneresultat_valg.grid(row=1,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+        innhold_i_liste_emneresultat_valg=StringVar()
+        lst_eksamener_emneresultat_valg=Listbox(emneresultat_valg_window,width=50,height=8,listvariable=innhold_i_liste_emneresultat_valg,yscrollcommand=y_scroll_emneresultat_valg.set)
+        lst_eksamener_emneresultat_valg.grid(row=1,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+        innhold_i_liste_emneresultat_valg.set(tuple(post_list_emneresultat_valg))
+
+        y_scroll_emneresultat_valg['command']=lst_eksamener_emneresultat_valg.yview
+
+        #avslutt
+        btn_avslutt_emneresultat_valg=Button(emneresultat_valg_window,text='Lukk vindu',width=10,command=emneresultat_valg_window.destroy)
+        btn_avslutt_emneresultat_valg.grid(row=9,column=2,padx=5,pady=5,sticky=E)
+
+
+    #lager markøren vår
+    emneresultat_markor=eksamensdatabase.cursor()
+    #henter emnekoder
+    emneresultat_markor.execute("SELECT Emnekode FROM emne")
+    #hiver de i en liste
+    post_list_emneresultat=[]
+    for row in emneresultat_markor:
+        post_list_emneresultat+=[row]
+
+    #GUI  
+    emneresultat_window=Toplevel()
+    emneresultat_window.title('Visning av resultater i emne')
+
+    lst_label_emneresultat=Label(emneresultat_window,text='Emnekode')
+    lst_label_emneresultat.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll_emneresultat=Scrollbar(emneresultat_window,orient=VERTICAL)
+    y_scroll_emneresultat.grid(row=1,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_liste_emneresultat=StringVar()
+    lst_eksamener_emneresultat=Listbox(emneresultat_window,width=50,height=8,listvariable=innhold_i_liste_emneresultat,yscrollcommand=y_scroll_emneresultat.set)
+    lst_eksamener_emneresultat.grid(row=1,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    lst_eksamener_emneresultat.bind('<<ListboxSelect>>',oppdater_seleksjon_emne)
+    innhold_i_liste_emneresultat.set(tuple(post_list_emneresultat))
+
+    y_scroll_emneresultat['command']=lst_eksamener_emneresultat.yview
+
+    #knapper
+    btn_legg_til_emneresultat=Button(emneresultat_window,text='Vis eksamensresultat for valgt emne',width=34,command=vis_emneresultat_valg)
+    btn_legg_til_emneresultat.grid(row=9,column=0,padx=5,pady=(5,5),sticky=W)
+
+    #avslutt
+    btn_avslutt_emneresultat=Button(emneresultat_window,text='Lukk vindu',width=10,command=emneresultat_window.destroy)
+    btn_avslutt_emneresultat.grid(row=9,column=2,padx=5,pady=5,sticky=E)
+    
+    emneresultat_markor.close()
 
 #viser alle eksamensresultater for en enkelt eksamen
 def vis_eksamensresultater_enkelt_eksamen():
@@ -368,7 +450,7 @@ def vis_eksamensresultater_enkelt_eksamen():
         #her må vi bruke infoen fra seleksjon til å hente ut resultatene tilknyttet den eksamen og vise i ny listebox. 
         eks_valgt_markor=eksamensdatabase.cursor()
         qry=("SELECT Studentnr, Karakter FROM eksamensresultat WHERE Emnekode=%s AND Dato=%s")
-        data=valgt_liste_enk[0],valgt_liste_enk[1]
+        data=(valgt_liste_enk[0],valgt_liste_enk[1])
         eks_valgt_dato=str(valgt_liste_enk[1])
         eks_valgt_markor.execute(qry,data)
         #tom liste med innholdet fra spørringen
@@ -528,7 +610,60 @@ def vis_eksamensresultater_enkelt_eksamen():
 
     enk_eksamen_markor.close()
 
+#viser alle eksamensresultater for en enkelt student
 def eksamensresultater_student():
+    def student_eksamensres_sok():
+        eksamensres_sok_markor=eksamensdatabase.cursor()
+        studentnr=eksamensresultater_student_studnr_sv.get()
+        qry=('''
+            SELECT eksamensresultat.Dato,eksamensresultat.Emnekode,Emnenavn,Karakter,Studiepoeng
+            FROM eksamensresultat,Emne
+            WHERE eksamensresultat.Emnekode=emne.Emnekode 
+            AND Studentnr=%s 
+            ORDER BY eksamensresultat.Dato
+        ''')
+        eksamensres_sok_markor.execute(qry,(studentnr,))
+        
+        post_list_eksamensresultater_student=[]
+        
+        for row in eksamensres_sok_markor:
+            post_list_eksamensresultater_student+=[row]
+        
+        eksamensres_sok_markor.close()
+        
+        innhold_i_liste_eksamensresultater_student.set(tuple(post_list_eksamensresultater_student))
+    
+    #GUI  
+    eksamensresultater_student_window=Toplevel()
+    eksamensresultater_student_window.title('Eksamensresultat for enkeltstudent')
+
+    eksamensresultater_student_frame=LabelFrame(eksamensresultater_student_window,text='Søk opp student')
+    eksamensresultater_student_frame.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+    eksamensresultater_student_lbl_studnr=Label(eksamensresultater_student_frame,text='Studentnr:')
+    eksamensresultater_student_lbl_studnr.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+    eksamensresultater_student_studnr_sv=StringVar()
+    eksamensresultater_student_ent_studnr=Entry(eksamensresultater_student_frame,textvariable=eksamensresultater_student_studnr_sv,width=6)
+    eksamensresultater_student_ent_studnr.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    btn_student_eksamensres_sok=Button(eksamensresultater_student_frame,text='Søk',width=6,command=student_eksamensres_sok)
+    btn_student_eksamensres_sok.grid(row=0,column=2,padx=5,pady=5,sticky=E)
+
+    lst_label_eksamensresultater_student=Label(eksamensresultater_student_window,text='Dato | Emnekode | Emnenavn | Karakter | Studiepoeng')
+    lst_label_eksamensresultater_student.grid(row=1,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll_eksamensresultater_student=Scrollbar(eksamensresultater_student_window,orient=VERTICAL)
+    y_scroll_eksamensresultater_student.grid(row=2,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_liste_eksamensresultater_student=StringVar()
+    lst_eksamener_eksamensresultater_student=Listbox(eksamensresultater_student_window,width=65,height=8,listvariable=innhold_i_liste_eksamensresultater_student,yscrollcommand=y_scroll_eksamensresultater_student.set)
+    lst_eksamener_eksamensresultater_student.grid(row=3,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    y_scroll_eksamensresultater_student['command']=lst_eksamener_eksamensresultater_student.yview
+
+    #avslutt
+    btn_avslutt_eksamensresultater_student=Button(eksamensresultater_student_window,text='Lukk vindu',width=10,command=eksamensresultater_student_window.destroy)
+    btn_avslutt_eksamensresultater_student.grid(row=11,column=2,padx=5,pady=5,sticky=E)
     print('eksamensresultater_student')
 
 def vitnemal():

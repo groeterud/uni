@@ -664,10 +664,80 @@ def eksamensresultater_student():
     #avslutt
     btn_avslutt_eksamensresultater_student=Button(eksamensresultater_student_window,text='Lukk vindu',width=10,command=eksamensresultater_student_window.destroy)
     btn_avslutt_eksamensresultater_student.grid(row=11,column=2,padx=5,pady=5,sticky=E)
-    print('eksamensresultater_student')
 
 def vitnemal():
-    print('vitnemal')
+
+    def vitnemal_sok():
+        vitnemal_sok_markor=eksamensdatabase.cursor()
+        studentnr=vitnemal_studnr_sv.get()
+        qry=('''
+        SELECT eksamensresultat.Emnekode,Emnenavn,MIN(Karakter) AS StandpunktKarakter,Studiepoeng
+        FROM eksamensresultat,Emne
+        WHERE eksamensresultat.Emnekode=emne.Emnekode 
+        AND Studentnr=%s
+        GROUP BY eksamensresultat.Emnekode
+        ORDER BY eksamensresultat.Emnekode
+        ''')
+        vitnemal_sok_markor.execute(qry,(studentnr,))
+        
+        post_list_vitnemal=[]
+        
+        for row in vitnemal_sok_markor:
+            post_list_vitnemal+=[row]
+
+        vitnemal_sok_markor.close()
+        
+        innhold_i_liste_vitnemal.set(tuple(post_list_vitnemal))
+
+        #summerer studiepoeng
+        studiepoeng=0
+        for x in range(len(post_list_vitnemal)):
+            studiepoeng+=post_list_vitnemal[x][3]
+        
+        vitnemal_studiepoeng_sv.set(studiepoeng)
+    
+
+    #GUI  
+    vitnemal_window=Toplevel()
+    vitnemal_window.title('Eksamensresultat for enkeltstudent')
+
+    vitnemal_frame=LabelFrame(vitnemal_window,text='Søk opp student')
+    vitnemal_frame.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+    vitnemal_lbl_studnr=Label(vitnemal_frame,text='Studentnr:')
+    vitnemal_lbl_studnr.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+    vitnemal_studnr_sv=StringVar()
+    vitnemal_ent_studnr=Entry(vitnemal_frame,textvariable=vitnemal_studnr_sv,width=6)
+    vitnemal_ent_studnr.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    btn_student_eksamensres_sok=Button(vitnemal_frame,text='Søk',width=6,command=vitnemal_sok)
+    btn_student_eksamensres_sok.grid(row=0,column=2,padx=5,pady=5,sticky=E)
+
+    lst_label_vitnemal=Label(vitnemal_window,text='Emnekode | Emnenavn | Standpunkt | Studiepoeng')
+    lst_label_vitnemal.grid(row=1,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll_vitnemal=Scrollbar(vitnemal_window,orient=VERTICAL)
+    y_scroll_vitnemal.grid(row=2,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_liste_vitnemal=StringVar()
+    lst_eksamener_vitnemal=Listbox(vitnemal_window,width=65,height=8,listvariable=innhold_i_liste_vitnemal,yscrollcommand=y_scroll_vitnemal.set)
+    lst_eksamener_vitnemal.grid(row=3,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    y_scroll_vitnemal['command']=lst_eksamener_vitnemal.yview
+
+    vitnemal_studiepoeng_frame=LabelFrame(vitnemal_window,text='Studiepoeng')
+    vitnemal_studiepoeng_frame.grid(row=11,column=0,padx=5,pady=5,sticky=W)
+
+    vitnemal_studiepoeng_lbl=Label(vitnemal_studiepoeng_frame,text='Totalt antall studiepoeng')
+    vitnemal_studiepoeng_lbl.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+
+    vitnemal_studiepoeng_sv=StringVar()
+    vitnemal_studiepoeng_ent=Entry(vitnemal_studiepoeng_frame,width=5,textvariable=vitnemal_studiepoeng_sv,state='readonly')
+    vitnemal_studiepoeng_ent.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    #avslutt
+    btn_avslutt_vitnemal=Button(vitnemal_window,text='Lukk vindu',width=10,command=vitnemal_window.destroy)
+    btn_avslutt_vitnemal.grid(row=11,column=2,padx=5,pady=5,sticky=E)
 
 def planlagte_eksamener_dag():
     print('planlagte_eksamener_dag')

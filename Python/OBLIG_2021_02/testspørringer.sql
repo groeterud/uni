@@ -25,6 +25,9 @@ FROM emne
 WHERE Emnekode='DFIATMC1';
 
 
+-- Selekter alle eksamensnummer
+SELECT Emnekode FROM emne;
+
 -- qry for å selektere alle eksamensresultater fra 1 spesifikt emne 
 SELECT Studentnr,Karakter,Dato AS Eksamensdato
 FROM eksamensresultat

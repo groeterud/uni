@@ -36,17 +36,30 @@ ORDER BY Studentnr;
 
 
 -- Karakterutskrift:
-SELECT Studentnr,eksamensresultat.Emnekode,Dato,Karakter,Emnenavn,Studiepoeng
+SELECT eksamensresultat.Dato,eksamensresultat.Emnekode,Emnenavn,Karakter,Studiepoeng
 FROM eksamensresultat,Emne
 WHERE eksamensresultat.Emnekode=emne.Emnekode 
 AND Studentnr=%s 
-ORDER BY eksamensresultat.Emnekode;
+ORDER BY eksamensresultat.Dato;
 
 
 -- Vitnemål
-SELECT Studentnr,eksamensresultat.Emnekode,Dato,MIN(Karakter) AS StandpunktKarakter,Emnenavn,Studiepoeng
+SELECT eksamensresultat.Emnekode,Emnenavn,MIN(Karakter) AS StandpunktKarakter,Studiepoeng
 FROM eksamensresultat,Emne
 WHERE eksamensresultat.Emnekode=emne.Emnekode 
-AND Studentnr=%s
+AND Studentnr='000001'
 GROUP BY eksamensresultat.Emnekode
 ORDER BY eksamensresultat.Emnekode;
+
+
+-- eksamener i en bestemt period
+
+-- eksamener på en bestemt dag 
+SELECT *
+FROM eksamen
+WHERE Dato>=%s AND Dato<=%s;
+
+--1
+SELECT *
+FROM eksamen
+WHERE Dato=%s

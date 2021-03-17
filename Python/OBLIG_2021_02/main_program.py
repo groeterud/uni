@@ -384,7 +384,7 @@ def registrer_eksamensresultat():
         btn_lagre.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
         btn_avslutt_legg_til_reg=Button(legg_til_vindu_reg,text='Avslutt',width=8,command=legg_til_vindu_reg.destroy)
-        btn_avslutt_legg_til_reg.grid(row=3,column=1,padx=5,pady=(10,5),sticky=E)
+        btn_avslutt_legg_til_reg.grid(row=1,column=1,padx=5,pady=(10,5),sticky=E)
 
     #henter alle poster med datering etter dagens dato. 
     reg_markor.execute("SELECT * FROM eksamen WHERE Dato<=CURRENT_DATE() ORDER BY Dato DESC")

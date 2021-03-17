@@ -28,12 +28,6 @@ def lagre_karakterer():
 
     messagebox.showinfo('Vellykket','Karakterene ble lagret!')
     
-    
-
-
-
-
-
 markor_eksamen.execute('''
     SELECT Fornavn,Etternavn,Eksamensresultat.*
     FROM Eksamensresultat JOIN 
@@ -47,10 +41,10 @@ for row in markor_eksamen:
     post_list_eks_updt+=[row]
 
 #enkel gui ramme
-window=Tk()
-window.title('Masseregistrering av eksamensresultat')
+legg_til_vindu_reg=Toplevel()
+legg_til_vindu_reg.title('Masseregistrering av eksamensresultat')
 
-registrering=LabelFrame(window,text='Skriv inn karakterer på registrerte studenter')
+registrering=LabelFrame(legg_til_vindu_reg,text='Skriv inn karakterer på registrerte studenter')
 registrering.grid(row=0,column=0,padx=5,pady=5)
 
 navn_header=Label(registrering,text='Navn')
@@ -80,7 +74,7 @@ for x in range(len(post_list_eks_updt)):
     karakter_sv_liste+=[sv_Karakter]
 
 
-btn_lagre=Button(window,text='Lagre',width=10,command=lagre_karakterer)
+btn_lagre=Button(legg_til_vindu_reg,text='Lagre',width=10,command=lagre_karakterer)
 btn_lagre.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
-window.mainloop()
+legg_til_vindu_reg.mainloop()

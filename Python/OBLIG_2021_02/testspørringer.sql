@@ -62,4 +62,12 @@ WHERE Dato>=%s AND Dato<=%s;
 --1
 SELECT *
 FROM eksamen
-WHERE Dato=%s
+WHERE Dato=%s;
+
+
+SELECT * FROM Eksamensresultat;
+SELECT * from student;
+SELECT Fornavn,Etternavn,Eksamensresultat.*
+FROM Eksamensresultat JOIN 
+    Student USING (Studentnr)
+WHERE Karakter IS NULL AND Emnekode='DATB1000' AND Dato='20200521'

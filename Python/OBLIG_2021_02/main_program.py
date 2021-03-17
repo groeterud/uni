@@ -306,48 +306,82 @@ def registrer_eksamensresultat():
         valgt_liste_reg=curselection_to_list(lst_eksamener_reg)
 
     def legg_til_eksamensresultat():
-        def lagre_legg_til_reg():
-            #henter inn verdier som skal lagres
-            studentnr_reg=studentnr_reg_SV.get()
-            karakter_reg=karakter_reg_SV.get()
+        def lagre_karakterer():
+            karakterer=[]
+            data=[]
+            for x in range(len(karakter_sv_liste)):
+                tempvar=karakter_sv_liste[x].get()
+                #if test for å se om man ikke har tastet inn noen verdi i et felt. Sørger for at vi beholder NULL på det punktet. 
+                if tempvar=='':
+                    tempvar=None
+                karakterer+=[tempvar]
+                data+=[(tempvar,post_list_eks_updt[x][2],post_list_eks_updt[x][3],post_list_eks_updt[x][4])]
 
-            #lager oss en lagringsmarkør. 
-            markor_lagre_reg=eksamensdatabase.cursor()
-            #Eksamensresultat(_Studentnr*_,_Emnekode*_,_Dato*_,Karakter)
-            qry=("INSERT INTO Eksamensresultat VALUES (%s,%s,%s,%s)")
-            data=(studentnr_reg,emnekode_reg,dato_reg,karakter_reg)
-            #exuter inserten
-            markor_lagre_reg.execute(qry,data)
-            #commiter endringen og lukker markøren
+            #ny markør
+            lagrings_markor=eksamensdatabase.cursor()
+            query=("UPDATE Eksamensresultat SET Karakter=%s WHERE Studentnr=%s AND Emnekode=%s AND Dato=%s")
+
+            lagrings_markor.executemany(query,data)
             eksamensdatabase.commit()
-            markor_lagre_reg.close()
+            lagrings_markor.close()
 
-
-            messagebox.showinfo('Vellykket','Følgende data ble lagret!:\n'+str(data),parent=legg_til_vindu_reg)
+            messagebox.showinfo('Vellykket','Karakterene ble lagret!')
         #fanger emnekode og dato for seleksjonen.     
         emnekode_reg=valgt_liste_reg[0]
         dato_reg=valgt_liste_reg[1]
-        #her må vi ha nytt vindu, vi bygger GUI
+
+        #markør for å hente seleksjonen for den valgte eksamen
+        markor_eksamen=eksamensdatabase.cursor()
+        qry=('''
+            SELECT Fornavn,Etternavn,Eksamensresultat.*
+            FROM Eksamensresultat JOIN 
+                Student USING (Studentnr)
+            WHERE Karakter IS NULL AND Emnekode=%s AND Dato=%s
+        ''')
+        data=(emnekode_reg,dato_reg)
+        markor_eksamen.execute(qry,data)
+        post_list_eks_updt=[]
+        
+        for row in markor_eksamen:
+            post_list_eks_updt+=[row]
+
+        markor_eksamen.close()
+        #enkel gui ramme
         legg_til_vindu_reg=Toplevel()
-        legg_til_vindu_reg.title('Legg til eksamensresultater for valgt emnme')
+        legg_til_vindu_reg.title('Masseregistrering av eksamensresultat')
 
-        lbl_studentnr_reg=Label(legg_til_vindu_reg,text='Studentnr')
-        lbl_studentnr_reg.grid(row=0,column=0,padx=5,pady=5,sticky=E)
+        registrering=LabelFrame(legg_til_vindu_reg,text='Skriv inn karakterer på registrerte studenter')
+        registrering.grid(row=0,column=0,padx=5,pady=5)
 
-        studentnr_reg_SV=StringVar()
-        ent_studentnr_reg=Entry(legg_til_vindu_reg,width=7,textvariable=studentnr_reg_SV)
-        ent_studentnr_reg.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+        navn_header=Label(registrering,text='Navn')
+        navn_header.grid(row=0,column=0,padx=5,pady=5,sticky=W)
 
-        lbl_karakter_reg=Label(legg_til_vindu_reg,text='Karakter')
-        lbl_karakter_reg.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+        studnr_header=Label(registrering,text='Studentnr')
+        studnr_header.grid(row=0,column=1,padx=5,pady=5)
 
-        karakter_reg_SV=StringVar()
-        ent_karakter_reg=Entry(legg_til_vindu_reg,width=2,textvariable=karakter_reg_SV)
-        ent_karakter_reg.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+        kar_header=Label(registrering,text='Karakter')
+        kar_header.grid(row=0,column=2,padx=5,pady=5)
 
-        #knapper
-        btn_lagre_legg_til_reg=Button(legg_til_vindu_reg,text='Lagre',width=6,command=lagre_legg_til_reg)
-        btn_lagre_legg_til_reg.grid(row=3,column=0,padx=5,pady=(10,5),sticky=W)
+        karakter_sv_liste=[]
+
+        for x in range(len(post_list_eks_updt)):
+            
+            lbl_navn=Label(registrering,text=post_list_eks_updt[x][0]+' '+post_list_eks_updt[x][1])
+            lbl_navn.grid(row=x+1,column=0,padx=5,pady=5,sticky=W)
+            
+
+            lbl_studentID=Label(registrering,text=post_list_eks_updt[x][2])
+            lbl_studentID.grid(row=x+1,column=1,padx=5,pady=5)
+
+            sv_Karakter=StringVar()
+            ent_Karakter=Entry(registrering,textvariable=sv_Karakter,width=2)
+            ent_Karakter.grid(row=x+1,column=2,padx=5,pady=5)
+
+            karakter_sv_liste+=[sv_Karakter]
+
+
+        btn_lagre=Button(legg_til_vindu_reg,text='Lagre',width=10,command=lagre_karakterer)
+        btn_lagre.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
         btn_avslutt_legg_til_reg=Button(legg_til_vindu_reg,text='Avslutt',width=8,command=legg_til_vindu_reg.destroy)
         btn_avslutt_legg_til_reg.grid(row=3,column=1,padx=5,pady=(10,5),sticky=E)
@@ -709,7 +743,7 @@ def vitnemal():
         WHERE eksamensresultat.Emnekode=emne.Emnekode 
         AND Studentnr=%s
         GROUP BY eksamensresultat.Emnekode
-        ORDER BY eksamensresultat.Emnekode
+        ORDER BY SUBSTRING(eksamensresultat.Emnekode,5),eksamensresultat.Emnekode
         ''')
         vitnemal_sok_markor.execute(qry,(studentnr,))
         

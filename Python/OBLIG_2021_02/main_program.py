@@ -51,7 +51,7 @@ def eksamen_dato_til_liste(nedre,ovre=True):
     return(eksamensliste)
     
 #ajourføring av fremtidige eksamener
-def ajour():     
+def ajour_eksamen():     
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
     # så de må arve denne variabelen når de ikke kan kalle funksjonen.
     def oppdater_seleksjon(event):
@@ -422,6 +422,92 @@ def registrer_eksamensresultat():
     btn_avslutt_reg.grid(row=9,column=2,padx=5,pady=5,sticky=E)
 
     reg_markor.close()
+
+def registrer_eksamen():
+    reg_eks_markor=eksamensdatabase.cursor()
+
+    def oppdater_seleksjon_reg_eks(event):
+        global valgt_liste_reg_eks #Gaddis s258 
+        valgt_liste_reg_eks=curselection_to_list(lst_eksamener_reg_eks)
+
+    def legg_til_deltagere():
+        def lagre_deltager():
+            #henter innhold fra tekstboksen, og setter det i en liste
+            innhold_i_textbox=input_tekstbox.get("1.0","end")
+            innhold_i_textbox=innhold_i_textbox.replace('\n','')
+            liste_textbox=innhold_i_textbox.split(',')
+
+            #henter annen info vi trenger for å strukturere insert setningen.
+            emnekode=valgt_liste_reg_eks[0]
+            dato=valgt_liste_reg_eks[1]
+
+            #lager tabellen vi bruker for executemany. 
+            data=[]
+            for x in range(len(liste_textbox)):
+                data+=[(liste_textbox[x],emnekode,dato,None)]
+
+            query=("INSERT INTO Eksamensresultat VALUES (%s,%s,%s,%s)")
+            markor_lagre_deltagere=eksamensdatabase.cursor()
+            markor_lagre_deltagere.executemany(query,data)
+            eksamensdatabase.commit()
+            markor_lagre_deltagere.close()
+
+            messagebox.showinfo('Vellykket','Deltager(e) lagret')
+        #enkel gui ramme
+        legg_til_vindu_reg=Toplevel()
+        legg_til_vindu_reg.title('Registrering av eksamensdeltagere')
+
+        registrering_studnr=LabelFrame(legg_til_vindu_reg,text='Skriv inn studentnr på deltagere')
+        registrering_studnr.grid(row=1,column=0,padx=5,pady=5)
+        
+        info_lbl=Label(legg_til_vindu_reg,text='Skriv inn studentnr for hver student, separert med komma for alle studenter \ndu ønsker å registrere på valgt eksamen\n Eksempel: 240214,240213,24015')
+        info_lbl.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+        
+        input_tekstbox=Text(registrering_studnr,height=10,width=60)
+        input_tekstbox.grid(row=0,column=0,columnspan=2,padx=5,pady=5)
+
+        btn_lagre=Button(legg_til_vindu_reg,text='Lagre',width=10,command=lagre_deltager)
+        btn_lagre.grid(row=2,column=0,padx=5,pady=5,sticky=W)
+
+        btn_avslutt_legg_til_reg=Button(legg_til_vindu_reg,text='Avslutt',width=8,command=legg_til_vindu_reg.destroy)
+        btn_avslutt_legg_til_reg.grid(row=2,column=1,padx=5,pady=(10,5),sticky=E)
+
+    #henter alle poster med datering etter dagens dato. 
+    reg_eks_markor.execute("SELECT * FROM eksamen ORDER BY Dato DESC")
+
+    #hiver det inn i en tom liste
+    post_list_reg_eks=[]
+    for row in reg_eks_markor:
+        post_list_reg_eks+=[row]
+    
+    
+    #GUI for oversikt over eksamener og meny. 
+    reg_eks_window=Toplevel()
+    reg_eks_window.title('Registrering av eksamensdeltagere')
+
+    lst_label_reg_eks=Label(reg_eks_window,text='Emnekode | Dato | Rom')
+    lst_label_reg_eks.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
+    #scrollbar
+    y_scroll_reg_eks=Scrollbar(reg_eks_window,orient=VERTICAL)
+    y_scroll_reg_eks.grid(row=1,column=1,rowspan=8,padx=(0,5),pady=5,sticky=NS)
+
+    innhold_i_eksamensliste_reg_eks=StringVar()
+    lst_eksamener_reg_eks=Listbox(reg_eks_window,width=50,height=8,listvariable=innhold_i_eksamensliste_reg_eks,yscrollcommand=y_scroll_reg_eks.set)
+    lst_eksamener_reg_eks.grid(row=1,column=0,rowspan=8,padx=(5,0),pady=5,sticky=E)
+    lst_eksamener_reg_eks.bind('<<ListboxSelect>>',oppdater_seleksjon_reg_eks)
+    innhold_i_eksamensliste_reg_eks.set(tuple(post_list_reg_eks))
+
+    y_scroll_reg_eks['command']=lst_eksamener_reg_eks.yview
+
+    #knapper
+    btn_legg_til_reg=Button(reg_eks_window,text='Legg til eksamensdeltagere for valgt eksamen',width=34,command=legg_til_deltagere)
+    btn_legg_til_reg.grid(row=9,column=0,padx=5,pady=(5,5),sticky=W)
+
+    #avslutt
+    btn_avslutt_reg=Button(reg_eks_window,text='Lukk vindu',width=10,command=reg_eks_window.destroy)
+    btn_avslutt_reg.grid(row=9,column=2,padx=5,pady=5,sticky=E)
+
+    reg_eks_markor.close()
 
 #resultater for enkelt emne
 def vis_emneresultater():
@@ -909,13 +995,18 @@ def main():
     eksamensmanipulasjon_frame.grid(row=0,column=0,padx=5,pady=10,sticky=N)
 
     #knapper i framen
-    btn_registrer_eksamensresultat=Button(eksamensmanipulasjon_frame,text='Legg til eksamensresultater',width=20,command=registrer_eksamensresultat)
+    btn_registrer_eksamensresultat=Button(eksamensmanipulasjon_frame,text='Legg til eksamensresultater',width=22,command=registrer_eksamensresultat)
     btn_registrer_eksamensresultat.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
 
-    btn_ajour=Button(eksamensmanipulasjon_frame,text='Legg til, slett eller endre eksamen',width=26,command=ajour)
-    btn_ajour.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    btn_registrer_eksamen=Button(eksamensmanipulasjon_frame,text='Registrer studenter til eksamen',width=24,command=registrer_eksamen)
+    btn_registrer_eksamen.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
-    #frem for enkeltstudent, ble rotete med for mange visninger
+    btn_ajour=Button(eksamensmanipulasjon_frame,text='Legg til, slett eller endre eksamen',width=26,command=ajour_eksamen)
+    btn_ajour.grid(row=2,column=0,padx=5,pady=5,sticky=W)
+
+    
+
+    #frame for enkeltstudent, ble rotete med for mange visninger
     enkeltstudent_frame=LabelFrame(window,text='Visninger for en enkelt student')
     enkeltstudent_frame.grid(row=0,column=1,padx=5,pady=10,sticky=N)
 

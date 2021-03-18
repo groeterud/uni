@@ -298,6 +298,9 @@ def ajour_eksamen():
 
     ajour_markor.close()
 
+def ajour_student():
+    print('ajour_student')
+
 #registrerer flere eksamensresultat for en avholdt eksamen.  
 def registrer_eksamensresultat():
     reg_markor=eksamensdatabase.cursor()
@@ -523,7 +526,7 @@ def vis_emneresultater():
         qry=('''
             SELECT Studentnr,Karakter,Dato AS Eksamensdato
             FROM eksamensresultat
-            WHERE Emnekode=%s
+            WHERE Emnekode=%s AND Karakter IS NOT NULL
             ORDER BY Studentnr
             ''')
         #lager markør
@@ -602,7 +605,7 @@ def vis_eksamensresultater_enkelt_eksamen():
     def vis_enk_eksamen_valg():
         #her må vi bruke infoen fra seleksjon til å hente ut resultatene tilknyttet den eksamen og vise i ny listebox. 
         eks_valgt_markor=eksamensdatabase.cursor()
-        qry=("SELECT Studentnr, Karakter FROM eksamensresultat WHERE Emnekode=%s AND Dato=%s")
+        qry=("SELECT Studentnr, Karakter FROM eksamensresultat WHERE Emnekode=%s AND Dato=%s AND Karakter IS NOT NULL")
         data=(valgt_liste_enk[0],valgt_liste_enk[1])
         eks_valgt_dato=str(valgt_liste_enk[1])
         eks_valgt_markor.execute(qry,data)
@@ -772,7 +775,7 @@ def eksamensresultater_student():
             SELECT eksamensresultat.Dato,eksamensresultat.Emnekode,Emnenavn,Karakter,Studiepoeng
             FROM eksamensresultat,Emne
             WHERE eksamensresultat.Emnekode=emne.Emnekode 
-            AND Studentnr=%s 
+            AND Studentnr=%s AND Karakter IS NOT NULL
             ORDER BY eksamensresultat.Dato
         ''')
         eksamensres_sok_markor.execute(qry,(studentnr,))
@@ -993,7 +996,7 @@ def main():
 
     #frame for eksamensmanipulasjon
     eksamensmanipulasjon_frame=LabelFrame(window,text='Eksamensmanipulasjon')
-    eksamensmanipulasjon_frame.grid(row=0,column=0,padx=5,pady=10,sticky=N)
+    eksamensmanipulasjon_frame.grid(row=0,column=0,padx=5,pady=5,sticky=W)
 
     #knapper i framen
     btn_registrer_eksamensresultat=Button(eksamensmanipulasjon_frame,text='Legg til eksamensresultater',width=22,command=registrer_eksamensresultat)
@@ -1007,7 +1010,7 @@ def main():
 
     #frame for enkeltstudent, ble rotete med for mange visninger
     enkeltstudent_frame=LabelFrame(window,text='Visninger for en enkelt student')
-    enkeltstudent_frame.grid(row=0,column=1,padx=5,pady=10,sticky=N)
+    enkeltstudent_frame.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
     btn_vitnemal=Button(enkeltstudent_frame,text='Vis vitnemål for en student',width=22,command=vitnemal)
     btn_vitnemal.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
@@ -1015,26 +1018,34 @@ def main():
     btn_vis_eksamensresultater_student=Button(enkeltstudent_frame,text='Vis alle eksamensresultater for enkeltstudent',width=34,command=eksamensresultater_student)
     btn_vis_eksamensresultater_student.grid(row=1,column=0,padx=5,pady=5,sticky=W)
     
+    #frame for ajourhold for student, jukser litt med paddingen for at det skal se ok ut
+    ajourhold_student_frame=LabelFrame(window,text='Studentspesifikk ajourhold')
+    ajourhold_student_frame.grid(row=1,column=1,padx=5,pady=(43,5))
+
+    #knapp i framet
+    btn_ajour_student=Button(ajourhold_student_frame,text='Ajourføring for enkeltstudent',width=33,command=ajour_student)
+    btn_ajour_student.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
+
     #frame for visninger
     visninger_frame=LabelFrame(window,text='Øvrige Visninger')
-    visninger_frame.grid(row=2,column=0,columnspan=2,padx=5,pady=10,sticky=N)
+    visninger_frame.grid(row=0,column=1,rowspan=2,padx=5,pady=10,sticky=N)
 
     #knapper i framet
     btn_vis_eksamensresultater=Button(visninger_frame,text='Vis alle eksamensresultater fra en eksamen',width=33,command=vis_eksamensresultater_enkelt_eksamen)
     btn_vis_eksamensresultater.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
 
     btn_vis_emneresultater=Button(visninger_frame,text='Vis eksamensresultater i et emne',width=26,command=vis_emneresultater)
-    btn_vis_emneresultater.grid(row=0,column=1,padx=5,pady=(10,5),sticky=W)
+    btn_vis_emneresultater.grid(row=1,column=0,padx=5,pady=(10,5),sticky=W)
 
     btn_eksamener_periode=Button(visninger_frame,text='Vis alle eksamener i en bestemt periode',width=31,command=eksamener_periode)
-    btn_eksamener_periode.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    btn_eksamener_periode.grid(row=2,column=0,padx=5,pady=5,sticky=W)
 
     btn_eksamener_dag=Button(visninger_frame,text='Vis alle eksamener på en bestemt dag',width=30,command=eksamener_dag)
-    btn_eksamener_dag.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+    btn_eksamener_dag.grid(row=3,column=0,padx=5,pady=5,sticky=W)
 
     #Terminer program
     btn_avslutt=Button(window,text='Avslutt',width=10,command=window.destroy)
-    btn_avslutt.grid(row=2,column=1,padx=5,pady=5,sticky=E)
+    btn_avslutt.grid(row=3,column=1,padx=5,pady=5,sticky=E)
 
     window.mainloop()
 main()

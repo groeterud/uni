@@ -2,8 +2,6 @@ import mysql.connector
 from tkinter import *
 from tkinter import messagebox
 
-from mysql.connector.errors import DataError
-
 #connection til databasen: 
 eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksamenssjef',passwd='oblig2021',db='oblig2021')
 
@@ -74,15 +72,14 @@ def ajour_eksamen():
         ny_post_list=[]
         for row in updt_markor:
             ny_post_list+=[row]
-        
+        updt_markor.close()
         #sletter alt som er i listeboksen
         lst_eksamener.delete(0,END)
 
         for x in range(len(ny_post_list)):
             #legger inn alt fra tabellen inn i listeboksen
             lst_eksamener.insert(END,ny_post_list[x])
-        updt_markor.close()
-           
+        
     #eksisterer fordi vi må sjekke duplukat både på oppdatering og oppretting
     def sjekk_rom_dato_duplikat(dato,romnr):
         duplikat=False
@@ -94,7 +91,7 @@ def ajour_eksamen():
         dup_post_list=[]
         for row in duplikat_markor:
             dup_post_list+=[row]
-
+        duplikat_markor.close()
         #gjør duplikatsjekken vår
         for x in range(len(dup_post_list)):
             datofix=str(dup_post_list[x][1])
@@ -102,19 +99,17 @@ def ajour_eksamen():
             datofix=datofix.replace('-','')
             if romnr==dup_post_list[x][2] and dato==datofix:
                 duplikat=True
-        
-        duplikat_markor.close()
         return (duplikat)
 
     #funksjon for å legge til ny eksamen
     def legg_til_eksamen():
         def lagre_legg_til():
+            #henter inputs fra bruker
             emnekode=emnekode_legg_til_SV.get()
             dato=dato_legg_til_SV.get()
             rom=rom_legg_til_SV.get()
-
+            #sjekker om det er duplikat på rom og dato
             duplikat=sjekk_rom_dato_duplikat(dato,rom)
-
             if duplikat==False:
                 #lager markøren vår
                 legg_til_markor=eksamensdatabase.cursor()
@@ -128,13 +123,11 @@ def ajour_eksamen():
                 oppdater_listeboks()
                 #Bekreftelse for bruker
                 messagebox.showinfo('Vellykket','Følgende data ble lagret!:'+str(data),parent=ajour_window)
-                
             else:
                 messagebox.showinfo('Feil','Fant duplisert dato og rom. Vennligst prøv igjen',parent=ajour_window)
             
             
             legg_til_vindu.destroy()
-
 
         #her må vi ha nytt vindu, vi bygger GUI
         legg_til_vindu=Toplevel()
@@ -168,8 +161,7 @@ def ajour_eksamen():
         btn_avslutt_legg_til.grid(row=3,column=1,padx=5,pady=(10,5),sticky=E)
 
     #funksjon for å oppdatere en eksamen    
-    def oppdater_eksamen():
-               
+    def oppdater_eksamen():          
         def populere_enter():
             ##henter ut seleksjonen fra listeboksen og hiver de rent i en liste. 
             #valgt_liste=curselection_to_list(lst_eksamener)
@@ -239,18 +231,14 @@ def ajour_eksamen():
         #kjører en funksjon for å oppdatere ent'ene med eksisterende info. 
         populere_enter()
 
-
     #funksjon for å slette en eksamen
     def slett_eksamen():
         valgt=str(lst_eksamener.get(lst_eksamener.curselection()))
         
         ans=messagebox.askyesno(title="Bekreft",message='Er du helt sikker på at du vil slette \n'+valgt,parent=ajour_window)
         del_markor=eksamensdatabase.cursor()
-        #kaller på funksjonen for å få tilbake seleksjonen over som en liste. 
-        #valgt_liste=curselection_to_list(lst_eksamener)
-
         if ans:
-            #qry=("DELETE FROM eksamen WHERE (Dato='%s' AND Romnr='%s' AND Emnekode='%s')")
+            #mer sammensatt execute, bare for å vise at jeg det også fungerer
             del_markor.execute("DELETE FROM Eksamen WHERE (Emnekode=%s AND Dato=%s AND Romnr=%s)",(valgt_liste_ajour[0],valgt_liste_ajour[1],valgt_liste_ajour[2],))
             eksamensdatabase.commit()
             oppdater_listeboks()
@@ -259,7 +247,7 @@ def ajour_eksamen():
     #henter alle poster med datering etter dagens dato. 
     ajour_markor.execute("SELECT * FROM eksamen WHERE Dato>CURRENT_DATE() ORDER BY Dato ASC")
 
-    #hiver det inn i en tom liste
+    #hiver det inn i en tom liste, som vi bruker i listeboksen vår
     post_list=[]
     for row in ajour_markor:
         post_list+=[row]
@@ -278,9 +266,8 @@ def ajour_eksamen():
     lst_eksamener=Listbox(ajour_window,width=50,height=8,listvariable=innhold_i_eksamensliste,yscrollcommand=y_scroll_eksamener.set)
     lst_eksamener.grid(row=1,column=1,rowspan=8,padx=(5,0),pady=5,sticky=E)
     lst_eksamener.bind('<<ListboxSelect>>',oppdater_seleksjon)
-    innhold_i_eksamensliste.set(tuple(post_list))
-
     y_scroll_eksamener['command']=lst_eksamener.yview
+    innhold_i_eksamensliste.set(tuple(post_list))
 
     #knapper
     btn_legg_til=Button(ajour_window,text='Legg til ny eksamen',width=15,command=legg_til_eksamen)
@@ -301,8 +288,8 @@ def ajour_eksamen():
 def ajour_student():
     #oppdater studentopplysninger
     def studentopplysninger():
-
         def oppdater_student():
+            #henter studentnr fra hovedmenyen
             studentnr=studentnr_ajour_SV.get()
             #henter verdier fra input
             fornavn_ajour=fornavn_ajour_sv.get()
@@ -454,8 +441,8 @@ def ajour_student():
         ent_dato_slett=Entry(window_eks_res_slett,textvariable=dato_slett_SV,width=8)
         ent_dato_slett.grid(row=2,column=1,padx=5,pady=5,sticky=W)
 
-        btn_slett_updt=Button(window_eks_res_slett,text='Oppdater',width=12,command=slett_updt)
-        btn_slett_updt.grid(row=3,column=0,columnspan=2,padx=5,pady=5)
+        btn_slett=Button(window_eks_res_slett,text='Slett',width=12,command=slett_updt)
+        btn_slett.grid(row=3,column=0,columnspan=2,padx=5,pady=5)
 
         btn_slett_avslutt=Button(window_eks_res_slett,text='Lukk vindu',width=15,command=window_eks_res_slett.destroy)
         btn_slett_avslutt.grid(row=3,column=2,padx=5,pady=5,sticky=E)
@@ -630,10 +617,8 @@ def registrer_eksamensresultat():
         karakter_sv_liste=[]
 
         for x in range(len(post_list_eks_updt)):
-            
             lbl_navn=Label(registrering,text=post_list_eks_updt[x][0]+' '+post_list_eks_updt[x][1])
             lbl_navn.grid(row=x+1,column=0,padx=5,pady=5,sticky=W)
-            
 
             lbl_studentID=Label(registrering,text=post_list_eks_updt[x][2])
             lbl_studentID.grid(row=x+1,column=1,padx=5,pady=5)
@@ -644,7 +629,6 @@ def registrer_eksamensresultat():
 
             karakter_sv_liste+=[sv_Karakter]
 
-
         btn_lagre=Button(legg_til_vindu_reg,text='Lagre',width=10,command=lagre_karakterer)
         btn_lagre.grid(row=1,column=0,padx=5,pady=5,sticky=W)
 
@@ -654,11 +638,10 @@ def registrer_eksamensresultat():
     #henter alle poster med datering etter dagens dato. 
     reg_markor.execute("SELECT * FROM eksamen WHERE Dato<=CURRENT_DATE() ORDER BY Dato DESC")
 
-    #hiver det inn i en tom liste
+    #hiver det inn i en tom liste for listeboksen vår
     post_list_reg=[]
     for row in reg_markor:
         post_list_reg+=[row]
-    
     
     #GUI for oversikt over eksamener og meny. 
     reg_eks_window=Toplevel()
@@ -688,6 +671,7 @@ def registrer_eksamensresultat():
 
     reg_markor.close()
 
+#registrering av eksamensdeltagere
 def registrer_eksamen():
     reg_eks_markor=eksamensdatabase.cursor()
 
@@ -785,24 +769,25 @@ def vis_emneresultater():
         valgt=valgt_liste_emne[0]
 
         qry=('''
-            SELECT Studentnr,Karakter,Dato AS Eksamensdato
-            FROM eksamensresultat
+            SELECT Fornavn,Etternavn,Studentnr,Karakter,Dato AS Eksamensdato
+            FROM eksamensresultat JOIN
+                Student USING(Studentnr)
             WHERE Emnekode=%s AND Karakter IS NOT NULL
             ORDER BY Studentnr
             ''')
         #lager markør
         emneresultat_valg_markor=eksamensdatabase.cursor()
         emneresultat_valg_markor.execute(qry,(valgt,))
-        
+        #liste for vår nye listeboks
         post_list_emneresultat_valg=[]
         for row in emneresultat_valg_markor:
             post_list_emneresultat_valg+=[row]
-
+        emneresultat_valg_markor.close()
         #GUI  
         emneresultat_valg_window=Toplevel()
         emneresultat_valg_window.title('Resultater for valgt emne')
 
-        lst_label_emneresultat_valg=Label(emneresultat_valg_window,text='Studentnr | Karakter | Dato')
+        lst_label_emneresultat_valg=Label(emneresultat_valg_window,text='Fornavn | Etternavn | Studentnr | Karakter | Dato')
         lst_label_emneresultat_valg.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
         #scrollbar
         y_scroll_emneresultat_valg=Scrollbar(emneresultat_valg_window,orient=VERTICAL)
@@ -818,7 +803,6 @@ def vis_emneresultater():
         #avslutt
         btn_avslutt_emneresultat_valg=Button(emneresultat_valg_window,text='Lukk vindu',width=10,command=emneresultat_valg_window.destroy)
         btn_avslutt_emneresultat_valg.grid(row=9,column=2,padx=5,pady=5,sticky=E)
-
 
     #lager markøren vår
     emneresultat_markor=eksamensdatabase.cursor()
@@ -866,7 +850,12 @@ def vis_eksamensresultater_enkelt_eksamen():
     def vis_enk_eksamen_valg():
         #her må vi bruke infoen fra seleksjon til å hente ut resultatene tilknyttet den eksamen og vise i ny listebox. 
         eks_valgt_markor=eksamensdatabase.cursor()
-        qry=("SELECT Studentnr, Karakter FROM eksamensresultat WHERE Emnekode=%s AND Dato=%s AND Karakter IS NOT NULL")
+        qry=('''
+            SELECT Fornavn,Etternavn,Studentnr, Karakter 
+            FROM eksamensresultat JOIN
+                Student USING (Studentnr)
+            WHERE Emnekode=%s AND Dato=%s AND Karakter IS NOT NULL
+        ''')
         data=(valgt_liste_enk[0],valgt_liste_enk[1])
         eks_valgt_dato=str(valgt_liste_enk[1])
         eks_valgt_markor.execute(qry,data)
@@ -909,7 +898,6 @@ def vis_eksamensresultater_enkelt_eksamen():
             else:
                 eks_valgt_f+=1
             
-  
         #GUI for visnig av eksamensresultater
         eks_valgt_window=Toplevel()
         eks_valgt_window.title('Eksamensresultater for '+emnenavn_eks_valgt)
@@ -917,7 +905,7 @@ def vis_eksamensresultater_enkelt_eksamen():
         frame_emnenavn_eks_valgt=LabelFrame(eks_valgt_window,text='Eksamen i '+emnenavn_eks_valgt+' - '+eks_valgt_dato)
         frame_emnenavn_eks_valgt.grid(row=0,column=0,padx=5,pady=(5,0),sticky=W)
 
-        lst_label_eks_valgt=Label(frame_emnenavn_eks_valgt,text='Studentnr | Karakter')
+        lst_label_eks_valgt=Label(frame_emnenavn_eks_valgt,text='Fornavn | Etternavn Studentnr | Karakter')
         lst_label_eks_valgt.grid(row=1,column=0,padx=5,pady=(5,0),sticky=W)
         #scrollbar
         y_scroll_eks_valgt=Scrollbar(frame_emnenavn_eks_valgt,orient=VERTICAL)
@@ -1030,6 +1018,7 @@ def vis_eksamensresultater_enkelt_eksamen():
 #viser alle eksamensresultater for en enkelt student
 def eksamensresultater_student():
     def student_eksamensres_sok():
+        #finner alle eksamensresultatene tilknyttet en enkelt student
         eksamensres_sok_markor=eksamensdatabase.cursor()
         studentnr=eksamensresultater_student_studnr_sv.get()
         qry=('''
@@ -1040,16 +1029,24 @@ def eksamensresultater_student():
             ORDER BY eksamensresultat.Dato
         ''')
         eksamensres_sok_markor.execute(qry,(studentnr,))
-        
-        post_list_eksamensresultater_student=[]
-        
+        #hiver resultatene i liste
+        post_list_eksamensresultater_student=[] 
         for row in eksamensres_sok_markor:
             post_list_eksamensresultater_student+=[row]
-        
-        eksamensres_sok_markor.close()
-        
+        #dytter listen i en listeboks for visning
         innhold_i_liste_eksamensresultater_student.set(tuple(post_list_eksamensresultater_student))
-    
+
+        #henter navn
+        qry=("SELECT Fornavn,Etternavn FROM Student WHERE Studentnr=%s")
+        eksamensres_sok_markor.execute(qry,(studentnr,))
+        #navneliste
+        navn_list=[]
+        for row in eksamensres_sok_markor:
+            navn_list+=[row]
+        eksamensres_sok_markor.close()
+        #oppdaterer teksten på labelframen vår for å indikere hvem sitt vitnemål dette er
+        eksamensresultater_student_frame['text']='Eksamensresultater for: '+navn_list[0][0]+' '+navn_list[0][1]
+
     #GUI  
     eksamensresultater_student_window=Toplevel()
     eksamensresultater_student_window.title('Eksamensresultat for enkeltstudent')
@@ -1084,8 +1081,8 @@ def eksamensresultater_student():
 
 #vis vitnemål
 def vitnemal():
-
     def vitnemal_sok():
+        #finner eksamensresultatene til oppgitt student
         vitnemal_sok_markor=eksamensdatabase.cursor()
         studentnr=vitnemal_studnr_sv.get()
         qry=('''
@@ -1097,27 +1094,33 @@ def vitnemal():
         ORDER BY SUBSTRING(eksamensresultat.Emnekode,4),eksamensresultat.Emnekode
         ''')
         vitnemal_sok_markor.execute(qry,(studentnr,))
-        
+        #hiver resultatene i en liste
         post_list_vitnemal=[]
-        
         for row in vitnemal_sok_markor:
             post_list_vitnemal+=[row]
-
-        vitnemal_sok_markor.close()
-        
+        #dytter listen inn i listeboksen for visning
         innhold_i_liste_vitnemal.set(tuple(post_list_vitnemal))
 
+        #henter navn
+        qry=("SELECT Fornavn,Etternavn FROM Student WHERE Studentnr=%s")
+        vitnemal_sok_markor.execute(qry,(studentnr,))
+        #navneliste
+        navn_list=[]
+        for row in vitnemal_sok_markor:
+            navn_list+=[row]
+        vitnemal_sok_markor.close()
+        #oppdaterer teksten på labelframen vår for å indikere hvem sitt vitnemål dette er
+        vitnemal_frame['text']='Vitnemål for: '+navn_list[0][0]+' '+navn_list[0][1]
+        
         #summerer studiepoeng
         studiepoeng=0
         for x in range(len(post_list_vitnemal)):
             studiepoeng+=post_list_vitnemal[x][3]
-        
         vitnemal_studiepoeng_sv.set(studiepoeng)
-    
 
     #GUI  
     vitnemal_window=Toplevel()
-    vitnemal_window.title('Eksamensresultat for enkeltstudent')
+    vitnemal_window.title('Vitnemål for enkeltstudent')
 
     vitnemal_frame=LabelFrame(vitnemal_window,text='Søk opp student')
     vitnemal_frame.grid(row=0,column=0,padx=5,pady=5,sticky=W)

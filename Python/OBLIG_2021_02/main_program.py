@@ -299,8 +299,191 @@ def ajour_eksamen():
     ajour_markor.close()
 
 def ajour_student():
-    print('ajour_student')
+    #oppdater studentopplysninger
+    def studentopplysninger():
 
+        def oppdater_student():
+            studentnr=studentnr_ajour_SV.get()
+            #henter verdier fra input
+            fornavn_ajour=fornavn_ajour_sv.get()
+            etternavn_ajour=etternavn_ajour_sv.get()
+            epost_ajour=epost_ajour_sv.get()
+            tlfnr_ajour=telefon_ajour_sv.get()
+
+            #lager markør og spørringsstruktur
+            updt_ajour_student_markor=eksamensdatabase.cursor()
+            qry=("UPDATE Student SET Fornavn=%s,Etternavn=%s,Epost=%s,Telefon=%s WHERE Studentnr=%s")
+            data=(fornavn_ajour,etternavn_ajour,epost_ajour,tlfnr_ajour,studentnr)
+            #utfører
+            updt_ajour_student_markor.execute(qry,data)
+            #commiter
+            eksamensdatabase.commit()
+            updt_ajour_student_markor.close()
+            messagebox.showinfo('Velykket','Studenten ble Oppdatert')    
+        
+        #GUI 
+        legg_til_student_window=Toplevel()
+        legg_til_student_window.title('Legg til en ny student')
+
+        lbl_fornavn_ajour=Label(legg_til_student_window,text='Fornavn')
+        lbl_fornavn_ajour.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+        fornavn_ajour_sv=StringVar()
+        ent_fornavn_ajour=Entry(legg_til_student_window,width=30,textvariable=fornavn_ajour_sv)
+        ent_fornavn_ajour.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_etternavn_ajour=Label(legg_til_student_window,text='Etternavn')
+        lbl_etternavn_ajour.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+
+        etternavn_ajour_sv=StringVar()
+        ent_etternavn_ajour=Entry(legg_til_student_window,width=20,textvariable=etternavn_ajour_sv)
+        ent_etternavn_ajour.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_epost_ajour=Label(legg_til_student_window,text='E-post')
+        lbl_epost_ajour.grid(row=2,column=0,padx=5,pady=5,sticky=W)
+
+        epost_ajour_sv=StringVar()
+        ent_epost_ajour=Entry(legg_til_student_window,width=40,textvariable=epost_ajour_sv)
+        ent_epost_ajour.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_telefon_ajour=Label(legg_til_student_window,text='Telefon')
+        lbl_telefon_ajour.grid(row=3,column=0,padx=5,pady=5,sticky=W)
+
+        telefon_ajour_sv=StringVar()
+        ent_telefon_ajour=Entry(legg_til_student_window,width=8,textvariable=telefon_ajour_sv)
+        ent_telefon_ajour.grid(row=3,column=1,padx=5,pady=5,sticky=W)
+
+        btn_insert=Button(legg_til_student_window,text='Lagre',width=10,command=oppdater_student)
+        btn_insert.grid(row=4,column=0,padx=5,pady=5,sticky=W)
+
+        btn_avslutt_insert=Button(legg_til_student_window,text='Lukk vindu',width=15,command=legg_til_student_window.destroy)
+        btn_avslutt_insert.grid(row=4,column=1,padx=5,pady=5,sticky=E)
+
+    def eks_res_endre():
+        def endre_updt():
+            #henter inputs
+            studentnr=studentnr_ajour_SV.get()
+            emnekode=emnekode_endre_SV.get()
+            dato=dato_endre_SV.get()
+            karakter=karakter_endre_SV.get()
+
+            #strukturering av spørringen
+            qry=("UPDATE Eksamensresultat SET Karakter=%s WHERE Studentnr=%s AND Emnekode=%s AND Dato=%s")
+            data=(karakter,studentnr,emnekode,dato)
+
+            #utfører spørringen, lagrer og lukker
+            endre_updt_markor=eksamensdatabase.cursor()
+            endre_updt_markor.execute(qry,data)
+            eksamensdatabase.commit()
+            endre_updt_markor.close()
+
+            messagebox.showinfo('Velykket','Eksamensresultatet ble endret')
+
+        #GUI
+        window_eks_res_endre=Toplevel()
+        window_eks_res_endre.title('Endre registrerte eksamensresultat')
+
+        lbl_endre_info=Label(window_eks_res_endre,text='Skriv inn emnekode, dato og karakter på en registrert eksamen')
+        lbl_endre_info.grid(row=0,column=0,columnspan=3,padx=5,pady=5,sticky=W)
+
+        lbl_emnekode_endre=Label(window_eks_res_endre,text='Emnekode')
+        lbl_emnekode_endre.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+
+        emnekode_endre_SV=StringVar()
+        ent_emnekode_endre=Entry(window_eks_res_endre,textvariable=emnekode_endre_SV,width=8)
+        ent_emnekode_endre.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_dato_endre=Label(window_eks_res_endre,text='Dato')
+        lbl_dato_endre.grid(row=2,column=0,padx=5,pady=5,sticky=E)
+
+        dato_endre_SV=StringVar()
+        ent_dato_endre=Entry(window_eks_res_endre,textvariable=dato_endre_SV,width=8)
+        ent_dato_endre.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_karakter_endre=Label(window_eks_res_endre,text='Karakter')
+        lbl_karakter_endre.grid(row=3,column=0,padx=5,pady=5,sticky=E)
+
+        karakter_endre_SV=StringVar()
+        ent_karakter_endre=Entry(window_eks_res_endre,textvariable=karakter_endre_SV,width=2)
+        ent_karakter_endre.grid(row=3,column=1,padx=5,pady=5,sticky=W)
+
+        btn_endre_updt=Button(window_eks_res_endre,text='Oppdater',width=12,command=endre_updt)
+        btn_endre_updt.grid(row=4,column=0,columnspan=2,padx=5,pady=5)
+
+        btn_endre_avslutt=Button(window_eks_res_endre,text='Lukk vindu',width=15,command=window_eks_res_endre.destroy)
+        btn_endre_avslutt.grid(row=4,column=2,padx=5,pady=5,sticky=E)
+
+    #slett karakter
+    def eks_res_slett():
+        def slett_updt():
+            #henter inputs
+            studentnr=studentnr_ajour_SV.get()
+            emnekode=emnekode_slett_SV.get()
+            dato=dato_slett_SV.get()
+
+            #strukturering av spørringen
+            qry=("DELETE FROM Eksamensresultat WHERE (Emnekode=%s AND Dato=%s AND Studentnr=%s)")
+            data=(emnekode,dato,studentnr)
+
+            #utfører spørringen, lagrer og lukker
+            slett_updt_markor=eksamensdatabase.cursor()
+            slett_updt_markor.execute(qry,data)
+            eksamensdatabase.commit()
+            slett_updt_markor.close()
+
+            messagebox.showinfo('Velykket','Eksamensresultatet ble slettet')
+
+        #GUI
+        window_eks_res_slett=Toplevel()
+        window_eks_res_slett.title('slett registrerte eksamensresultat')
+
+        lbl_slett_info=Label(window_eks_res_slett,text='Skriv inn emnekode, dato og karakter på en registrert eksamen')
+        lbl_slett_info.grid(row=0,column=0,columnspan=3,padx=5,pady=5,sticky=W)
+
+        lbl_emnekode_slett=Label(window_eks_res_slett,text='Emnekode')
+        lbl_emnekode_slett.grid(row=1,column=0,padx=5,pady=5,sticky=E)
+
+        emnekode_slett_SV=StringVar()
+        ent_emnekode_slett=Entry(window_eks_res_slett,textvariable=emnekode_slett_SV,width=8)
+        ent_emnekode_slett.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+        lbl_dato_slett=Label(window_eks_res_slett,text='Dato')
+        lbl_dato_slett.grid(row=2,column=0,padx=5,pady=5,sticky=E)
+
+        dato_slett_SV=StringVar()
+        ent_dato_slett=Entry(window_eks_res_slett,textvariable=dato_slett_SV,width=8)
+        ent_dato_slett.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+
+        btn_slett_updt=Button(window_eks_res_slett,text='Oppdater',width=12,command=slett_updt)
+        btn_slett_updt.grid(row=3,column=0,columnspan=2,padx=5,pady=5)
+
+        btn_slett_avslutt=Button(window_eks_res_slett,text='Lukk vindu',width=15,command=window_eks_res_slett.destroy)
+        btn_slett_avslutt.grid(row=3,column=2,padx=5,pady=5,sticky=E)
+
+    #GUI
+    ajour_student_window=Toplevel()
+    ajour_student_window.title('Ajourføring av enkeltstudent')
+
+    lbl_studentnr_ajour=Label(ajour_student_window,text='Vennligst skriv inn studentnr')
+    lbl_studentnr_ajour.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+    studentnr_ajour_SV=StringVar()
+    ent_studentnr_ajour=Entry(ajour_student_window,width=8,textvariable=studentnr_ajour_SV)
+    ent_studentnr_ajour.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    btn_studentopplysninger=Button(ajour_student_window,text='Endre studentopplysninger',width=26,command=studentopplysninger)
+    btn_studentopplysninger.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+
+    btn_eks_res_endre=Button(ajour_student_window,text='Endre eksamensresultat',width=26,command=eks_res_endre)
+    btn_eks_res_endre.grid(row=2,column=0,padx=5,pady=5,sticky=W)
+
+    btn_eks_res_slett=Button(ajour_student_window,text='Slett eksamensresultat',width=26,command=eks_res_slett)
+    btn_eks_res_slett.grid(row=3,column=0,padx=5,pady=5,sticky=W)
+
+    btn_avslutt_studentjour=Button(ajour_student_window,text='Lukk vindu',width=10,command=ajour_student_window.destroy)
+    btn_avslutt_studentjour.grid(row=3,column=1,padx=5,pady=5,sticky=E)
+
+#legg til ny student i databasen
 def legg_til_student():
     #henter høyeste studentnr+1 fra databasen 
     def nytt_studentnr():
@@ -320,7 +503,7 @@ def legg_til_student():
         studentnr=str(studentnr)
         #hiver det tilbake
         return(studentnr)
-        
+
     def insert_student():
         #henter høyeste studentnr+1 fra databasen 
         studentnr=nytt_studentnr()
@@ -378,7 +561,6 @@ def legg_til_student():
 
     btn_avslutt_insert=Button(legg_til_student_window,text='Lukk vindu',width=15,command=legg_til_student_window.destroy)
     btn_avslutt_insert.grid(row=4,column=1,padx=5,pady=5,sticky=E)
-
 
 #registrerer flere eksamensresultat for en avholdt eksamen.  
 def registrer_eksamensresultat():

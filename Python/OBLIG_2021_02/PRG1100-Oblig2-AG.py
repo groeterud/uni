@@ -7,16 +7,24 @@ eksamensdatabase=mysql.connector.connect(host='localhost',port=3306,user='Eksame
 
 #funksjon for å gjøre en listeboksseleksjon om til en liste. Bruker den i flere funksjoner
 def curselection_to_list(list_name):
+    #global variabel for å huske siste gyldige verdi
+    #må være global slik at vi 'husker den' mellom hver kjøring.
+    global curselection_list_old
     try:
         valgt=str(list_name.get(list_name.curselection()))
         #gjør den om til kommaserparert streng
         valgt=valgt.replace('(','').replace(')','').replace(' ','').replace('-','').replace("'","")
         #gjør kommeseparert streng om til liste
         curselection_list=valgt.split(',')
+        #dette var ok, da mellomlagrer vi det i den gamle variabelen
+        curselection_list_old=curselection_list
+        #returnerer listen
         return(curselection_list)
     #thrower av og til errorer når ingenting er selektert. Har ingenting å si for funksjonaliteten. 
     except TclError:
-        ingenting_er_selektert=True  
+        #om vi ikke har noe selektert så 'overskrives' seleksjonen med None om vi ikke returner noe, så vi tar vare på 'siste gyldige verdi'
+        #og returnerer den istedenfor. 
+        return(curselection_list_old)
 
 #gjør en av to spørringer basert på input og returnerer en liste med data fra spørringen.
 def eksamen_dato_til_liste(nedre,ovre=True):
@@ -52,15 +60,12 @@ def eksamen_dato_til_liste(nedre,ovre=True):
 #ajourføring av fremtidige eksamener
 def ajour_eksamen():     
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
-    # så de må arve denne variabelen når de ikke kan kalle funksjonen. Bruker avarter av denne funksjonen flere ganger. 
+    # så de må arve denne variabelen når de ikke kan kalle funksjonen. 
+    # Bruker avarter av denne funksjonen flere ganger fordi bind ikke can passe navnet på listen som argument. 
     def oppdater_seleksjon(event):
-            #NBNB: OM DU HAR TID 
-                #OM du selekterer en popup, så forsvinner seleksjonen i listeboksen, og den gamle lista blir overskrevet med en tom liste
-                #Dette thrower en error. 
-                # OM du har tid, finn en måte å ta vare på siste gyldige seleksjon og skriv en 'if valg_liste_ajour==None --> erstatt med gammel verdi. 
             global valgt_liste_ajour #Gaddis s258
             valgt_liste_ajour=curselection_to_list(lst_eksamener)
-    
+
     #markøren vår
     ajour_markor=eksamensdatabase.cursor()
     #funksjon for å oppdatere listeboksen

@@ -837,7 +837,7 @@ def vitnemal():
         WHERE eksamensresultat.Emnekode=emne.Emnekode 
         AND Studentnr=%s
         GROUP BY eksamensresultat.Emnekode
-        ORDER BY SUBSTRING(eksamensresultat.Emnekode,5),eksamensresultat.Emnekode
+        ORDER BY SUBSTRING(eksamensresultat.Emnekode,4),eksamensresultat.Emnekode
         ''')
         vitnemal_sok_markor.execute(qry,(studentnr,))
         

@@ -302,7 +302,82 @@ def ajour_student():
     print('ajour_student')
 
 def legg_til_student():
-    print('legg_til_student')
+    #henter høyeste studentnr+1 fra databasen 
+    def nytt_studentnr():
+        studentnr_markor=eksamensdatabase.cursor()
+        #henter ut høyeste studentnr og legger det i en liste
+        studentnr_markor.execute('''
+            SELECT MAX(Studentnr)
+            FROM student 
+        ''')
+        studentnr_liste=[]
+        for row in studentnr_markor:
+            studentnr_liste+=[row]
+        studentnr_markor.close()
+        #øker det med 1 og gjør det om til streng for input
+        studentnr=int(studentnr_liste[0][0])
+        studentnr+=1
+        studentnr=str(studentnr)
+        #hiver det tilbake
+        return(studentnr)
+        
+    def insert_student():
+        #henter høyeste studentnr+1 fra databasen 
+        studentnr=nytt_studentnr()
+        #henter verdier fra input
+        fornavn=fornavn_sv.get()
+        etternavn=etternavn_sv.get()
+        epost=epost_sv.get()
+        tlfnr=telefon_sv.get()
+
+        #lager markør og spørringsstruktur
+        insert_markor=eksamensdatabase.cursor()
+        qry=("INSERT INTO Student VALUES (%s,%s,%s,%s,%s)")
+        data=(studentnr,fornavn,etternavn,epost,tlfnr)
+        #utfører
+        insert_markor.execute(qry,data)
+        #commiter
+        eksamensdatabase.commit()
+        insert_markor.close()
+        messagebox.showinfo('Velykket','Studenten ble lagret')    
+    
+    #GUI 
+    legg_til_student_window=Toplevel()
+    legg_til_student_window.title('Legg til en ny student')
+
+    lbl_fornavn=Label(legg_til_student_window,text='Fornavn')
+    lbl_fornavn.grid(row=0,column=0,padx=5,pady=5,sticky=W)
+
+    fornavn_sv=StringVar()
+    ent_fornavn=Entry(legg_til_student_window,width=30,textvariable=fornavn_sv)
+    ent_fornavn.grid(row=0,column=1,padx=5,pady=5,sticky=W)
+
+    lbl_etternavn=Label(legg_til_student_window,text='Etternavn')
+    lbl_etternavn.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+
+    etternavn_sv=StringVar()
+    ent_etternavn=Entry(legg_til_student_window,width=20,textvariable=etternavn_sv)
+    ent_etternavn.grid(row=1,column=1,padx=5,pady=5,sticky=W)
+
+    lbl_epost=Label(legg_til_student_window,text='E-post')
+    lbl_epost.grid(row=2,column=0,padx=5,pady=5,sticky=W)
+
+    epost_sv=StringVar()
+    ent_epost=Entry(legg_til_student_window,width=40,textvariable=epost_sv)
+    ent_epost.grid(row=2,column=1,padx=5,pady=5,sticky=W)
+
+    lbl_telefon=Label(legg_til_student_window,text='Telefon')
+    lbl_telefon.grid(row=3,column=0,padx=5,pady=5,sticky=W)
+
+    telefon_sv=StringVar()
+    ent_telefon=Entry(legg_til_student_window,width=8,textvariable=telefon_sv)
+    ent_telefon.grid(row=3,column=1,padx=5,pady=5,sticky=W)
+
+    btn_insert=Button(legg_til_student_window,text='Lagre',width=10,command=insert_student)
+    btn_insert.grid(row=4,column=0,padx=5,pady=5,sticky=W)
+
+    btn_avslutt_insert=Button(legg_til_student_window,text='Lukk vindu',width=15,command=legg_til_student_window.destroy)
+    btn_avslutt_insert.grid(row=4,column=1,padx=5,pady=5,sticky=E)
 
 
 #registrerer flere eksamensresultat for en avholdt eksamen.  

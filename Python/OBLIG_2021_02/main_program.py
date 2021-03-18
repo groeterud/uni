@@ -301,6 +301,9 @@ def ajour_eksamen():
 def ajour_student():
     print('ajour_student')
 
+def legg_til_student():
+    print('legg_til_student')
+
 #registrerer flere eksamensresultat for en avholdt eksamen.  
 def registrer_eksamensresultat():
     reg_markor=eksamensdatabase.cursor()
@@ -1010,7 +1013,7 @@ def main():
 
     #frame for enkeltstudent, ble rotete med for mange visninger
     enkeltstudent_frame=LabelFrame(window,text='Visninger for en enkelt student')
-    enkeltstudent_frame.grid(row=1,column=0,padx=5,pady=5,sticky=W)
+    enkeltstudent_frame.grid(row=0,column=1,padx=5,pady=5,sticky=NW)
 
     btn_vitnemal=Button(enkeltstudent_frame,text='Vis vitnemål for en student',width=22,command=vitnemal)
     btn_vitnemal.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
@@ -1020,15 +1023,18 @@ def main():
     
     #frame for ajourhold for student, jukser litt med paddingen for at det skal se ok ut
     ajourhold_student_frame=LabelFrame(window,text='Studentspesifikk ajourhold')
-    ajourhold_student_frame.grid(row=1,column=1,padx=5,pady=(43,5))
+    ajourhold_student_frame.grid(row=1,column=0,padx=5,pady=5,sticky=NW)
 
     #knapp i framet
-    btn_ajour_student=Button(ajourhold_student_frame,text='Ajourføring for enkeltstudent',width=33,command=ajour_student)
+    btn_ajour_student=Button(ajourhold_student_frame,text='Ajourføring for enkeltstudent',width=24,command=ajour_student)
     btn_ajour_student.grid(row=0,column=0,padx=5,pady=(10,5),sticky=W)
+
+    btn_legg_til_student=Button(ajourhold_student_frame,text='Legg til ny student',width=24,command=legg_til_student)
+    btn_legg_til_student.grid(row=1,column=0,padx=5,pady=(10,5),sticky=W)
 
     #frame for visninger
     visninger_frame=LabelFrame(window,text='Øvrige Visninger')
-    visninger_frame.grid(row=0,column=1,rowspan=2,padx=5,pady=10,sticky=N)
+    visninger_frame.grid(row=1,column=1,padx=5,pady=5,sticky=NW)
 
     #knapper i framet
     btn_vis_eksamensresultater=Button(visninger_frame,text='Vis alle eksamensresultater fra en eksamen',width=33,command=vis_eksamensresultater_enkelt_eksamen)

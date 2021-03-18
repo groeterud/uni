@@ -20,6 +20,7 @@ def curselection_to_list(list_name):
     except TclError:
         ingenting_er_selektert=True  
 
+#gjør en av to spørringer basert på input og returnerer en liste med data fra spørringen.
 def eksamen_dato_til_liste(nedre,ovre=True):
     eksamen_dato_markor=eksamensdatabase.cursor()
     #om bare en dato
@@ -53,7 +54,7 @@ def eksamen_dato_til_liste(nedre,ovre=True):
 #ajourføring av fremtidige eksamener
 def ajour_eksamen():     
     #trigger for å oppdatere seleksjonen. Dette er fordi vi må ha tilgang til valgt_liste i andre TopLevels, 
-    # så de må arve denne variabelen når de ikke kan kalle funksjonen.
+    # så de må arve denne variabelen når de ikke kan kalle funksjonen. Bruker avarter av denne funksjonen flere ganger. 
     def oppdater_seleksjon(event):
             #NBNB: OM DU HAR TID 
                 #OM du selekterer en popup, så forsvinner seleksjonen i listeboksen, og den gamle lista blir overskrevet med en tom liste
@@ -984,7 +985,7 @@ def eksamener_periode():
     btn_avslutt_eksamener_periode=Button(eksamener_periode_window,text='Lukk vindu',width=10,command=eksamener_periode_window.destroy)
     btn_avslutt_eksamener_periode.grid(row=11,column=2,padx=5,pady=5,sticky=E)
 
-#kaster det i en main, mest så jeg kan kollapse det og slippe scrolling.
+#kaster GUI i en main, mest så jeg kan kollapse det og slippe scrolling.
 def main():
     #GUI
     window=Tk()
@@ -1004,8 +1005,6 @@ def main():
     btn_ajour=Button(eksamensmanipulasjon_frame,text='Legg til, slett eller endre eksamen',width=26,command=ajour_eksamen)
     btn_ajour.grid(row=2,column=0,padx=5,pady=5,sticky=W)
 
-    
-
     #frame for enkeltstudent, ble rotete med for mange visninger
     enkeltstudent_frame=LabelFrame(window,text='Visninger for en enkelt student')
     enkeltstudent_frame.grid(row=0,column=1,padx=5,pady=10,sticky=N)
@@ -1015,10 +1014,10 @@ def main():
 
     btn_vis_eksamensresultater_student=Button(enkeltstudent_frame,text='Vis alle eksamensresultater for enkeltstudent',width=34,command=eksamensresultater_student)
     btn_vis_eksamensresultater_student.grid(row=1,column=0,padx=5,pady=5,sticky=W)
-
+    
     #frame for visninger
     visninger_frame=LabelFrame(window,text='Øvrige Visninger')
-    visninger_frame.grid(row=1,column=0,columnspan=2,padx=5,pady=10,sticky=N)
+    visninger_frame.grid(row=2,column=0,columnspan=2,padx=5,pady=10,sticky=N)
 
     #knapper i framet
     btn_vis_eksamensresultater=Button(visninger_frame,text='Vis alle eksamensresultater fra en eksamen',width=33,command=vis_eksamensresultater_enkelt_eksamen)

@@ -1,9 +1,6 @@
 DROP SCHEMA IF EXISTS oblig2021;
-
 CREATE SCHEMA oblig2021;
-
 USE oblig2021;
-
 
 CREATE TABLE Student
 (
@@ -29,7 +26,6 @@ CREATE TABLE Rom
     Antallplasser INTEGER (3),
     CONSTRAINT RomPK PRIMARY KEY (Romnr)
 );
-
 CREATE TABLE Eksamen
 (
     Emnekode CHAR (8) NOT NULL,
@@ -39,7 +35,6 @@ CREATE TABLE Eksamen
     CONSTRAINT EksamenEmneFK FOREIGN KEY (Emnekode) REFERENCES Emne (Emnekode),
     CONSTRAINT EksamenRomFK FOREIGN KEY (Romnr) REFERENCES Rom (Romnr)
 );
-
 CREATE TABLE Eksamensresultat
 (
     Studentnr CHAR (6) NOT NULL,

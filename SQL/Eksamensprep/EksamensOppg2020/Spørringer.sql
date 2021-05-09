@@ -22,7 +22,7 @@ FROM prof
 WHERE numphds < 50;
 
 --g
-SELECT MIN((gpa)) AS lavesteGPA, sname
+SELECT MIN(gpa) AS lavesteGPA, sname
 FROM student;
 
 -- h jeg bruker Electronics som eksempel fordi lazy 
@@ -32,12 +32,11 @@ FROM enroll
 WHERE dname='Electronics';
 
 -- i bruker annet tall for illustrativitet.
-SELECT cname, cno, section.sectno, COUNT(sid) AS Antall
+SELECT cname, cno, sectno
 FROM course
-    JOIN section using (cno)
     JOIN enroll USING (cno)
 GROUP BY cname
-HAVING Antall<15;
+HAVING COUNT(sid)<15;
 
 -- j 
 SELECT sname, student.sid, MAX (teller) AS Mest
@@ -47,7 +46,12 @@ FROM (
     GROUP BY sid
 )AS TellerSporring
     JOIN student USING (sid);
-
+-- j - Andrea
+SELECT Sname, Student.Sid, COUNT(Cno) AS AntallKurs
+FROM Student
+LEFT JOIN Enroll ON Student.Sid=Enroll.Sid
+GROUP BY Sname,Enroll.Sid
+ORDER BY AntallKurs DESC;
 
 -- k
 SELECT DISTINCT dname
@@ -62,7 +66,6 @@ FROM enroll
     JOIN major USING (dname)
     JOIN course USING (cno)
 WHERE cname='Computer Science';
-
 
 -- m
 SELECT dname, numphds
@@ -100,12 +103,18 @@ WHERE sid IN (
         JOIN course USING (cno)
     WHERE cname='Computer Science'
 );
+-- niklas O
+SELECT student.sname, (MAX(student.age)-MIN(student.age)) AS AldersForskjell
+FROM student JOIN major
+    USING (sid)
+WHERE major.dname='Electronics';
 
+-- p
 SELECT major.dname, AVG(student.gpa) AS AvgGPA
 FROM major
     JOIN student USING (sid)
 GROUP BY major.dname
-HAVING AvgGPA>3.3;
+HAVING AvgGPA<3.4;
 
 
 --q
@@ -117,3 +126,9 @@ WHERE sid IN (
         JOIN course USING (cno)
     WHERE cname='Computer Science'
 );
+
+SELECT student.sid,sname,gpa
+FROM student 
+    JOIN enroll USING (sid)
+    JOIN course USING (cno)
+WHERE course.cname='Computer Science';

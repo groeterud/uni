@@ -36,6 +36,18 @@ FROM boks
     LEFT JOIN utleie USING (BoksID)
 GROUP BY boks.BoksID
 HAVING ANtallUtleie=0;
+-- h alt 2
+SELECT *
+FROM Boks
+WHERE BoksID NOT IN (
+    SELECT BoksID
+    FROM utleie
+);
+
+SELECT BoksID,SenterID
+FROM Boks
+WHERE BoksID NOT IN (SELECT BoksID FROM Utleie)
+ORDER BY BoksID;
 
 -- i
 INSERT INTO kunde (Fornavn,Etternavn,Mobilnr,Betalingskortnr) VALUES
@@ -51,6 +63,13 @@ CREATE VIEW LedigeBokser AS(
             WHERE Sluttidspkt IS NULL
         )
 );
+-- alt 2, noen begrensninger
+SELECT *
+FROM senter
+INNER JOIN boks USING (SenterID)
+INNER JOIN utleie USING (BoksID)
+WHERE Sluttidspkt IS NOT NULL;
+
 SELECT * FROM ledigebokser;
 Select * from utleie;
 -- k 
@@ -68,6 +87,25 @@ GROUP BY boks.BoksID
 HAVING ANtallUtleie>0
 ORDER BY AntallUtleie DESC;
 
+-- alt 2 
+SELECT Boks.BoksID,Senternavn,COUNT(Starttidspkt) AS AntallUtleier
+FROM Boks,Utleie,Senter
+WHERE Boks.BoksID=Utleie.BoksID
+AND Senter.SenterID=Boks.SenterID
+GROUP BY Boks.BoksID
+HAVING AntallUtleier>=0
+ORDER BY AntallUtleier DESC;
+
+-- alt 3
+SELECT Boks.BoksID,Senter.Senternavn, COUNT(Starttidspkt) AS AntallUtleid
+FROM Senter JOIN Boks
+USING (SenterID)
+JOIN Utleie
+USING (BoksID)
+GROUP BY Utleie.BoksID
+HAVING AntallUtleid>0
+ORDER BY AntallUtleid DESC;
+
 -- n
 SELECT kunde.Mobilnr, Fornavn, Etternavn, SUM(utleie.Belop) AS TotalSum
 FROM kunde
@@ -77,7 +115,22 @@ FROM kunde
 GROUP BY HundeID
 ORDER BY TotalSum DESC;
 
+-- alt 2
+SELECT Kunde.Mobilnr,Fornavn,Etternavn, SUM(Utleie.Belop) AS Totalbelop
+FROM Utleie JOIN Hund
+USING (HundeID)
+INNER JOIN Kunde
+ON Hund.Eier=Kunde.Mobilnr
+GROUP BY Kunde.Mobilnr
+ORDER BY Totalbelop DESC;
 
+-- alt 3
+SELECT Kunde.Mobilnr,Fornavn,Etternavn,SUM(Belop) AS Totalbeløp
+FROM Kunde,Utleie,Hund
+WHERE Kunde.Mobilnr=Hund.Eier
+AND Hund.HundeID=Utleie.HundeID
+GROUP BY Kunde.Mobilnr
+ORDER BY Totalbeløp DESC;
 
 -- o
 SELECT COUNT(boks.BoksID) AS AntallLedige, senter.SenterID, senter.Senternavn

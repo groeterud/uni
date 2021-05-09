@@ -68,25 +68,7 @@ INSERT INTO course (cname,dname) VALUES
 ('Computer Science','Electronics'),
 ('Programming ezmode','Electronics');
 
-INSERT INTO major VALUES
-('Generic',1),
-('Generic',2),
-('Generic',3),
-('Electronics',4),
-('Generic',5),
-('Electronics',6),
-('Handmade',7),
-('Electronics',8),
-('Electronics',9),
-('Handmade',10),
-('Electronics',11),
-('Handmade',12),
-('Electronics',13),
-('Handmade',14),
-('Electronics',15),
-('Handmade',16),
-('Handmade',17);
-
+INSERT INTO major VALUES('Generic',1),('Generic',2),('Generic',3),('Electronics',4),('Generic',5),('Electronics',6),('Handmade',7),('Electronics',8),('Electronics',9),('Handmade',10),('Electronics',11),('Handmade',12),('Electronics',13),('Handmade',14),('Electronics',15),('Handmade',16),('Handmade',17);
 
 INSERT INTO section VALUES
 ('Electronics',1,1,'Adalberto Davis'),

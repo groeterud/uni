@@ -10,6 +10,9 @@ public class Hare extends Dyr{
         this.pelsFarge = pelsFarge;
         fangst(tid,sted,lengde,vekt,pelsFarge);
     }
+    public String getHareType(){
+        return hareType;
+    }
     public void fangst(String tid,String sted,Double lengde,Double vekt, String pelsFarge) {
         // setter parametere
         super.setTid(tid);

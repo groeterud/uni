@@ -27,6 +27,7 @@ public class Gaupe extends Dyr{
         fangstHistorikk.add(temp);
     }
 
+
     @Override
     public String toString() {
         return super.toString() +

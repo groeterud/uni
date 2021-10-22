@@ -1,5 +1,5 @@
 public class testKlient {
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         Kontroll kontroll = new Kontroll();
 
         kontroll.nyGaupe("F",200.00,50.00, "20210515 20:33","Øvre havrevei 12",35.15);
@@ -8,8 +8,15 @@ public class testKlient {
 
         kontroll.nyHare("M",25.12,12.5,"20210101","S3","V","Lilla");
         kontroll.nyHare("F",23.12,09.5,"20212121","S4","S", "Brun");
-        kontroll.printHarer();
-        kontroll.printDyr("H1");
+        kontroll.gjennFangstHare("H1","20211001","S3",26.9,13.00,"Brun");
 
+        System.out.println(kontroll.printHarer());
+        System.out.println(kontroll.printGauper());
+
+        System.out.println(kontroll.printAlleDyr());
+
+        System.out.println(kontroll.printDyr("G1"));
     }
+
+     */
 }

@@ -1,10 +1,11 @@
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Kontroll {
     ArrayList<Gaupe> gauper = new ArrayList<>();
     ArrayList<Hare> harer = new ArrayList<>();
-
+    
     public void nyGaupe(String kjønn, Double lengde, Double vekt, String tid, String sted, Double øretustLengde) {
         String id = "G"+Integer.toString(gauper.size()+1);
         Gaupe g = new Gaupe(id,kjønn,lengde,vekt,tid,sted,øretustLengde);
@@ -24,7 +25,6 @@ public class Kontroll {
         hare.fangst(tid,sted,lengde,vekt,pelsFarge);
     }
 
-
     public Dyr finnDyr(String id) {
         Collections.sort(gauper);
         int index = Collections.binarySearch(gauper, new Gaupe(id,null,null,null,null,null,null));
@@ -39,22 +39,98 @@ public class Kontroll {
         return null;
     }
 
-    public void printGauper() {
+    public String printGauper() {
+        ArrayList<ArrayList<Object>> fangstHistorikk;
+        String print="Alle gauper vi har fanget\n\n";
+        //for hver gaupe
         for (int i = 0; i < gauper.size(); i++) {
             Gaupe g = gauper.get(i);
-            System.out.println(g);
+            fangstHistorikk=g.getFangstHistorikk();
+            print+="Gaupe:"+g.getIdentifikator()+", kjønn:"+g.getKjønn()+":\n";
+            print+="Fangsthistorikk:\n";
+            //går gjennom fangsthistorikken
+            for (int j = 0; j < fangstHistorikk.size(); j++) {
+                ArrayList<Object> fangst=fangstHistorikk.get(j);
+                print+="Dato:"+fangst.get(0)+"\t\t Sted:"+fangst.get(1)+"\t\t Lengde:"+fangst.get(2)+"\t\t Vekt:"+fangst.get(3)+"\t\t Øretust:"+fangst.get(4)+"\n";
+            }
+            print+="\n";
         }
+        return print;
     }
-    public void printHarer() {
+    public String printHarer() {
+        ArrayList<ArrayList<Object>> fangstHistorikk;
+        String print="Alle harer vi har fanget\n\n";
+        //for hver hare
         for (int i = 0; i < harer.size(); i++) {
             Hare h = harer.get(i);
-            System.out.println(h);
+            fangstHistorikk=h.getFangstHistorikk();
+            print+="Hare:"+h.getIdentifikator()+", kjønn:"+h.getKjønn()+", type:"+h.getHareType()+"\n";
+            print+="Fangsthistorikk:\n";
+            //går gjennom fangsthistorikken
+            for (int j = 0; j < fangstHistorikk.size(); j++) {
+                ArrayList<Object> fangst=fangstHistorikk.get(j);
+                print+="Dato:"+fangst.get(0)+"\t\t Sted:"+fangst.get(1)+"\t\t Lengde:"+fangst.get(2)+"\t\t Vekt:"+fangst.get(3)+"\t\t Pelsfarge:"+fangst.get(4)+"\n";
+            }
+            print+="\n";
         }
+        return print;
     }
-    public void printDyr(String id) {
+    public String printDyr(String id) {
         Dyr d = finnDyr(id);
-        if (d != null) System.out.println(d.toString());
-        else System.out.println("Fant ikke dyret");
+        if (d != null) {
+            ArrayList<ArrayList<Object>> fangstHistorikk = d.getFangstHistorikk();
+            String print="";
+            if (d instanceof Gaupe) {
+                print+="Gaupe:"+d.getIdentifikator()+", kjønn:"+d.getKjønn()+":\n";
+                print+="Fangsthistorikk:\n";
+                //går gjennom fangsthistorikken
+                for (int j = 0; j < fangstHistorikk.size(); j++) {
+                    ArrayList<Object> fangst=fangstHistorikk.get(j);
+                    print+="Dato:"+fangst.get(0)+"\t\t Sted:"+fangst.get(1)+"\t\t Lengde:"+fangst.get(2)+"\t\t Vekt:"+fangst.get(3)+"\t\t Øretust:"+fangst.get(4)+"\n";
+                }
+            }
+            else if (d instanceof Hare){
+                print+="Hare:"+d.getIdentifikator()+", kjønn:"+d.getKjønn()+", type:"+ ((Hare) d).getHareType()+"\n";
+                print+="Fangsthistorikk:\n";
+                for (int j = 0; j < fangstHistorikk.size(); j++) {
+                    ArrayList<Object> fangst=fangstHistorikk.get(j);
+                    print+="Dato:"+fangst.get(0)+"\t\t Sted:"+fangst.get(1)+"\t\t Lengde:"+fangst.get(2)+"\t\t Vekt:"+fangst.get(3)+"\t\t Pelsfarge:"+fangst.get(4)+"\n";
+                }
+            }
+            return print;
+        }
+        else return "Fant ikke dyret";
+    }
+    public String printAlleDyr() {
+        ArrayList<ArrayList<Object>> fangstHistorikk;
+        String print="Alle dyr vi har fanget\n";
+        //for hver gaupe
+        for (int i = 0; i < gauper.size(); i++) {
+            Gaupe g = gauper.get(i);
+            fangstHistorikk=g.getFangstHistorikk();
+            print+="Gaupe:"+g.getIdentifikator()+", kjønn:"+g.getKjønn()+":\n";
+            print+="Fangsthistorikk:\n";
+            //går gjennom fangsthistorikken
+            for (int j = 0; j < fangstHistorikk.size(); j++) {
+                ArrayList<Object> fangst=fangstHistorikk.get(j);
+                print+="Dato:"+fangst.get(0)+"\t\t Sted:"+fangst.get(1)+"\t\t Lengde:"+fangst.get(2)+"\t\t Vekt:"+fangst.get(3)+"\t\t Øretust:"+fangst.get(4)+"\n";
+            }
+            print+="\n";
+        }
+        //for hver hare
+        for (int i = 0; i < harer.size(); i++) {
+            Hare h = harer.get(i);
+            fangstHistorikk=h.getFangstHistorikk();
+            print+="Hare:"+h.getIdentifikator()+", kjønn:"+h.getKjønn()+", type:"+h.getHareType()+"\n";
+            print+="Fangsthistorikk:\n";
+            //går gjennom fangsthistorikken
+            for (int j = 0; j < fangstHistorikk.size(); j++) {
+                ArrayList<Object> fangst=fangstHistorikk.get(j);
+                print+="Dato:"+fangst.get(0)+"\t\t Sted:"+fangst.get(1)+"\t\t Lengde:"+fangst.get(2)+"\t\t Vekt:"+fangst.get(3)+"\t\t Pelsfarge:"+fangst.get(4)+"\n";
+            }
+            print+="\n";
+        }
+        return print;
     }
 
 }

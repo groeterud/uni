@@ -13,7 +13,7 @@ public class Grensesnitt {
                 nyttSpeilrefleks();
                 break;
             case 1:
-                nyttSpeilløst();
+                nyttSpeilløst(); //skriver ikke metoden siden det ikke er etterspurt.
                 break;
         }
     }
@@ -47,7 +47,7 @@ public class Grensesnitt {
         int serienummer = Integer.parseInt(JOptionPane.showInputDialog("Hva er kameraets serienummer? "));
         Kamera kamera = kontroll.finnKameraBIN(serienummer);
         if (kamera!=null) {
-            System.out.println(kamera.toString()); //kunne brukt ShowMessageDialog her.
+            System.out.println(kamera.toString()); //skriver ut informasjon om det finnes.
         }
         else System.out.println("Fant ikke noe kamera med det serienummeret");
     }

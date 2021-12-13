@@ -34,7 +34,7 @@ public class Kontroll {
         Kamera kamera = finnKameraBIN(serienummer);
         if (kamera==null) return false; // avslutter her om vi ikke fant kamera
         // finner kunden
-        Kunde kunde = finnKunde(kundenummer);
+        Kunde kunde = finnKunde(kundenummer); //antar vi har den metoden slik spesifisert i oppgaven
         if (kunde==null) return false; // avslutter her om vi ikke fant kunden
         Utleie utleie = new Utleie(utdato,inndato, null,kamera,kunde);
         return kunde.nyttUtleie(utleie); //nyttUtleie returner true om alt gikk som det skulle eller false om det ikke gjorde det.

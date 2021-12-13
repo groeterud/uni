@@ -17,6 +17,7 @@ public class Kunde {
     public ArrayList<Utleie> getUtleie() {
         return utleie;
     }
+    //nødvendig for 2e
     public boolean nyttUtleie(Utleie ut) {
         if (ut!=null) {
             utleie.add(ut);
